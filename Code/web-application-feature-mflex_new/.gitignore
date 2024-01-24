@@ -1,0 +1,28 @@
+#editor project files
+/.gradle
+/.idea
+*.iml
+/.classpath
+/.project
+/.settings
+
+#project locale (conventional)
+/conf/bulkpay.properties
+/src/main/webapp/ng
+/src/ng/node_modules
+/src/ng/.npmrc
+/src/ng/.angular
+/src/ng/dist
+/src/ng/e2e/*.js
+/src/ng/e2e/*.map
+/src/ng/package-lock.json
+/conf/idp_cert.crt
+/src/ng/.npmrc
+
+#provisioned
+/build
+/logs
+/out
+/target
+/package.cmd
+/dumps

@@ -1,0 +1,19 @@
+<nav class="table-top-line text-right">
+    <paginator class="page-block" [totalRecords]="totalData" [offset]="offset" (pageChange)="loadData($event)"></paginator>
+</nav>
+<table class="table table-bordered table-striped table-sm">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Inherited From</th>
+        <th>System/Custom</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of records">
+        <td>{{item.name}}</td>
+        <td>{{item.inheritedFrom?.name || "--"}}</td>
+        <td>{{item.readonly ? "System" : "Custom"}}</td>
+    </tr>
+    </tbody>
+</table>

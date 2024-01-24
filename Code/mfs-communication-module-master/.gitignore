@@ -1,0 +1,19 @@
+#idea project files
+/.idea
+*.iml
+
+#eclipse project files
+/.classpath
+/.project
+/.settings
+
+#env specific files and directory povision
+/build
+/conf/communicator.properties
+/conf/test.communicator.properties
+/logs
+/out
+/target
+/package.cmd
+/test.cmd
+/conf/test.communicator.properties

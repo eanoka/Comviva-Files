@@ -1,0 +1,106 @@
+<div class="body-part">
+    <div class="form-group row">
+        <label for="payment-request-sub-account" class="col-1 col-form-label"> Sub Account:</label>
+        <div class="col-2" [class.loading-incomplete]=false>
+            <ng-select
+                    id="payment-request-sub-account"
+                    name="subAccount"
+                    [(ngModel)]="subAccount"
+                    [items]="divisionEntries"
+                    [multiple]="true"
+                    [closeOnSelect]="true"
+                    bindLabel="name"
+                    placeholder="Choose Applicable Sub Accounts">
+            </ng-select>
+        </div>
+
+        <label for="category" class="col-1 col-form-label">Biller Category:</label>
+        <div class="col-2" [class.loading-incomplete]=false>
+            <select class="form-control" id="category" name="category" [disabled]=false [(ngModel)]="category">
+                <option [ngValue]="nullReference">Choose Biller Category Name</option>
+                <ng-template ngFor let-item [ngForOf]="categories" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+
+        <label for="company" class="col-1 col-form-label">Biller Company:</label>
+        <div class="col-2" [class.loading-incomplete]=false>
+            <select name="company" class="form-control" id="company" [disabled]=false [(ngModel)]="company">
+                <option [ngValue]="nullReference">Choose Biller Company Name</option>
+                <ng-template ngFor let-item [ngForOf]="category && category.companies" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+
+        <label for="consumer-id" class="col-1 col-form-label">Account/Meter No:</label>
+        <div class="col-2">
+            <input name="consumerId" type="text" class="form-control" id="consumer-id" placeholder="Enter Account/Meter No" [(ngModel)]="accno">
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-8" style="text-align: right">
+            <button type="submit" (click)=loadTableData()>Filter</button>
+        </div>
+    </div>
+<br>
+<br>
+</div>
+
+
+<nav class="table-top-line text-right">
+    <paginator class="page-block" [totalRecords]="totalData" [offset]="offset" (pageChange)="loadTableData()"></paginator>
+</nav>
+
+<table class="table table-bordered table-striped table-sm">
+    <thead>
+    <tr>
+    	<th>Alias</th>
+        <th>Account</th>
+        <th>Subsidiary Account</th>
+        <th>Biller Type</th>
+        <th>Biller Name</th>
+        <th>Meter/Account</th>
+        <th>Select</th>
+    </tr>
+    </thead>
+    <tbody #tbody>
+        <tr *ngFor="let item of records">
+        	<td>{{item.alias}}</td>
+            <td>{{item.clientDivision.client.name}}</td>
+            <td>{{item.clientDivision.name}}</td>
+            <td>{{item.company.category.name}}</td>
+            <td>{{item.company.name}}</td>
+            <td>
+                <ng-template [ngIf]="permissions.includes('Manage Bill Data')" [ngIfElse]="noPermission">
+                    <a routerLink="/manage-bill-data/create-bill-data" [queryParams]="{id: item.id}" routerLinkActive="active">{{item.accountNo}}</a>
+                </ng-template>
+                <ng-template #noPermission>{{item.accountNo}}</ng-template>
+            </td>
+            <td>
+                <input type="checkbox" id="delete-checkbox-{{item.id}}" attr.bill-data-id="{{item.id}}">
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div *ngIf='permissions.includes("Manage Bill Data")' class="bottom-button-line text-right">
+    <span>
+        <a routerLink="/manage-bill-data/create-bill-data" routerLinkActive="active" class="btn btn-submit">
+            Add
+            <span class="fa-stack">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <i class="fa fa-plus fa-stack-1x"></i>
+            </span>
+        </a>
+        &nbsp; &nbsp;
+        <button class="btn btn-submit" (click)="deleteSelecteds()">
+            Delete
+            <span class="fa-stack">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <i class="fa fa-minus fa-stack-1x"></i>
+            </span>
+        </button>
+    </span>
+</div>

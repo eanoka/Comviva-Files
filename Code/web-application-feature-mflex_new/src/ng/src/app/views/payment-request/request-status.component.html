@@ -1,0 +1,143 @@
+<form class="role-creation-form" (ngSubmit)="onSubmit(thisForm)" #thisForm="ngForm" *ngIf="!requests">
+    <div class="form-group row" *ngIf="loggedUser.isGP">
+        <label for="account" class="col-4 col-form-label">Account:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" id="account" name="account" required="" [class.is-invalid]="!accField.valid" [disabled]="!dataLoaded" [(ngModel)]="account" #accField="ngModel">
+                <option *ngIf="!account" [ngValue]="nullReference">{{'Select an account'}}</option>
+                <ng-template ngFor let-item [ngForOf]="clients" let-i="index">
+                    <option [ngValue]="item.id">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row" *ngIf="!loggedUser.isGP">
+        <label for="payment-request-sub-account" class="col-4 col-form-label">Sub Account:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <ng-select
+                    id="payment-request-sub-account"
+                    name="subAccount"
+                    [(ngModel)]="subAccount"
+                    [items]="divisionEntries"
+                    [disabled]="!dataLoaded"
+                    [multiple]="true" [closeOnSelect]="true"
+                    bindLabel="name"
+                    bindValue="id"
+                    placeholder="Choose Sub Accounts">
+            </ng-select>
+        </div>
+    </div>
+        <div class="form-group row">
+        <label for="category" class="col-4 col-form-label">Biller Category:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" id="category" name="category" (ngModelChange)="company = nullReference" [disabled]="!dataLoaded" [(ngModel)]="category" #categoryField="ngModel">
+                <option [ngValue]="nullReference">Any Biller Category</option>
+                <ng-template ngFor let-item [ngForOf]="categories" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="company" class="col-4 col-form-label">Biller Company:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select name="company" class="form-control" id="company" [(ngModel)]="company" #companyField="ngModel">
+                <option [ngValue]="nullReference">Any Biller Company</option>
+                <ng-template ngFor let-item [ngForOf]="category && category.companies" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="accno" class="col-4 col-form-label">Meter/Account No:</label>
+        <div class="col-8">
+            <input name="accno" class="form-control" id="accno" [(ngModel)]="accno" #accField="ngModel">
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <label for="start" class="col-4 col-form-label">Start Date:</label>
+        <div class="col-8">
+            <input name="start" type="date" class="form-control" [ngClass]="{'is-invalid': !startField.valid}" id="start" [(ngModel)]="start" #startField="ngModel" [validate]="{either: endField, trigger: endField}">
+            <div *ngIf="startField.errors?.either" class="invalid-feedback">
+                Either start date or end date is required
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="end" class="col-4 col-form-label">End Date:</label>
+        <div class="col-8">
+            <input type="date" class="form-control" [class.is-invalid]="!endField.valid" id="end" name="end" [(ngModel)]="end" #endField="ngModel" [validate]="{either: startField, gte: {ref: startField, type: 'date'}, trigger: startField}">
+            <div *ngIf="endField.errors?.either" class="invalid-feedback">
+                Either start date or end date is required
+            </div>
+            <div *ngIf="endField.errors?.gte" class="invalid-feedback">
+                End date should be greater than start date
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align: center">
+            <button type="submit" [disabled]="submitting || !dataLoaded || !thisForm.form.valid">Submit</button>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</form>
+<div *ngIf="requests" class="table-container" [class.loading]="submitting">
+    <nav class="table-top-line text-right">
+        <paginator class="page-block" [totalRecords]="requests.count" [offset]="requests.offset" (pageChange)="loadTableData($event)"></paginator>
+    </nav>
+    <table class="table table-bordered table-striped table-sm">
+        <thead>
+        <tr>
+            <th>Creation Date</th>
+            <th>Request ID</th>
+            <th>Requester</th>
+            <th>Qty</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Invoice</th>
+            <th>Attachment</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of requests.records">
+            <td>{{_m(item.creationTime).format("Do MMM YYYY")}}</td>
+            <td *ngIf="loggedUser.permissions.includes(_actions.VIEW_BILL_STATUS); else noPerm">
+                <a [routerLink]="'/payment-request/check-bill-status'" [state]="{request: item.id}">
+                    {{_u.toPRId(item.id)}}
+                </a>
+            </td>
+            <ng-template #noPerm><td>{{_u.toPRId(item.id)}}</td></ng-template>
+            <td>{{item.initiator}}</td>
+            <td>{{item.billCount}}</td>
+            <td>{{item.amount.toBdFormat()}}</td>  
+            <td>{{item.status}}
+            &nbsp; &nbsp;
+            <span>
+            <button *ngIf="item.status=='Rejected'" class="btn btn-create-new" routerLink="../create" [queryParams]="{id: item.id}">
+                    Create Another Request
+            </button>
+            </span>
+            </td>
+            <td><a href="/payment-request/downloadAsPdf" (click)="downPdf($event, item.id)">Download</a></td>
+        	<td>
+                <a *ngIf="item.attachment" href="{{App.basePath}}/paymentRequest/downloadPaymentRequestDocument?id={{item.id}}" download="{{item.attachment.substring(item.attachment.indexOf('_') + 1)}}"> {{item.attachment.substring(item.attachment.indexOf('_') + 1)}}</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="bottom-button-line text-right">
+        <span>
+            <a class="btn btn-cancel" (click)="refineFilter()">
+                Refine Filter
+            </a>
+            &nbsp; &nbsp;
+            <a *ngIf="loggedUser.permissions.includes(_actions.CREATE_PAYMENT_REQUEST)" class="btn btn-cancel" [routerLink]="'/payment-request/create'">
+                Request For Payment
+            </a>
+        </span>
+    </div>
+</div>
+<request-pdf-download *ngIf="pdfGenerating" (onDownload)="onDownload()" [requestId]="downloadingRequestId"></request-pdf-download>

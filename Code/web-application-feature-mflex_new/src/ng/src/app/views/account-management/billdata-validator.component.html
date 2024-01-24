@@ -1,0 +1,65 @@
+<div class="form-group row" (change)="dataChanged = true">
+    <label for="checkbox-id" class="col-4 col-form-label">Validator Applicable:</label>
+    <div class="col-8">
+        <input type="checkbox" class="checkbox-id" id="checkbox-id" name="isEnabled" [(ngModel)]="data.isEnabled" #isEnabled="ngModel">
+    </div>
+</div>
+<div class="form-group row" id="rolesid">
+    <label for="validator-roles" class="col-4 col-form-label">Validator Roles:</label>
+    <div class="col-6" [class.loading-incomplete]="!dataLoaded">
+        <ng-select *ngIf="!dataLoaded"
+                   name="allowedRolesDisabled"
+                   [items]="[]"
+                   [disabled]="true"
+                   bindLabel="name"
+                   placeholder="Choose Roles"
+                   [multiple]="true"
+                   [closeOnSelect]="true"
+                   [(ngModel)]="data.allowedRoles">
+        </ng-select>
+        <ng-select *ngIf="dataLoaded"
+                   (change)="dataChanged = true"
+                   name="allowedRoles"
+                   id="validator-roles"
+                   [items]="allRoles"
+                   [disabled]="!dataLoaded || !data.isEnabled"
+                   bindLabel="name"
+                   placeholder="Choose Roles"
+                   [multiple]="true"
+                   [closeOnSelect]="true"
+                   [(ngModel)]="data.allowedRoles">
+        </ng-select>
+    </div>
+</div>
+<div class="form-group row" id="usersid">
+    <label for="validator-roles" class="col-4 col-form-label">Validator Users:</label>
+    <div class="col-6" [class.loading-incomplete]="!dataLoaded">
+        <ng-select *ngIf="!dataLoaded"
+                   name="allowedUsersDisabled"
+                   [items]="[]"
+                   [disabled]="true"
+                   bindLabel="name"
+                   placeholder="Choose Users"
+                   [multiple]="true"
+                   [closeOnSelect]="true"
+                   [(ngModel)]="data.allowedUsers">
+        </ng-select>
+        <ng-select *ngIf="dataLoaded"
+                   (change)="dataChanged = true"
+                   name="allowedRolesDisabled"
+                   id="validator-users"
+                   [items]="allUsers"
+                   [disabled]="!dataLoaded || !data.isEnabled"
+                   bindLabel="name"
+                   placeholder="Choose Users"
+                   [multiple]="true"
+                   [closeOnSelect]="true"
+                   [(ngModel)]="data.allowedUsers">
+        </ng-select>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-6" style="text-align: right">
+        <button type="submit" (click)="submitUpdatedData()" [disabled]="!dataChanged">Update</button>
+    </div>
+</div>

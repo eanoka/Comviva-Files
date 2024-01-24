@@ -1,0 +1,284 @@
+<div class="body-part">
+    <form class="refresh-bill-form" (ngSubmit)="onSubmit(thisForm)" #thisForm="ngForm" [class.loading-incomplete]="!dataLoaded">
+        <div class="form-group row">
+            <label for="payment-request-sub-account" class="col-1 col-form-label"> Sub Account:</label>
+            <div class="col-2" [class.loading-incomplete]="!dataLoaded">
+                <ng-select
+                        id="payment-request-sub-account"
+                        name="subAccount"
+                        [(ngModel)]="boundModel.subAccount"
+                        [items]="divisionEntries"
+                        [disabled]="!dataLoaded"
+                        [multiple]="true" [closeOnSelect]="true"
+                        bindLabel="name"
+                        bindValue="id"
+                        placeholder="Choose Applicable Sub Accounts">
+                </ng-select>
+            </div>
+
+            <label for="category" class="col-1 col-form-label">Biller Category:</label>
+            <div class="col-2" [class.loading-incomplete]="!dataLoaded">
+                <select class="form-control" id="category" name="category" [disabled]="!dataLoaded" [(ngModel)]="boundModel.category" (ngModelChange)="categorySelectionUpdated = true; boundModel.company = null;">
+                    <option [ngValue]="nullReference">{{categorySelectionUpdated ? 'Any Category' : 'Choose Biller Category Name'}}</option>
+                    <ng-template ngFor let-item [ngForOf]="data.categories" let-i="index">
+                        <option [ngValue]="item">{{item.name}}</option>
+                    </ng-template>
+                </select>
+            </div>
+
+            <label for="company" class="col-1 col-form-label">Biller Company:</label>
+            <div class="col-2" [class.loading-incomplete]="!dataLoaded">
+                <select name="company" class="form-control" id="company" [disabled]="!dataLoaded" [(ngModel)]="boundModel.company" (ngModelChange)="companySelectionUpdated = true">
+                    <option [ngValue]="nullReference">{{companySelectionUpdated ? 'Any Biller' : 'Choose Biller Company Name'}}</option>
+                    <ng-template ngFor let-item [ngForOf]="boundModel.category && boundModel.category.companies" let-i="index">
+                        <option [ngValue]="item">{{item.name}}</option>
+                    </ng-template>
+                </select>
+            </div>
+
+            <label for="consumer-id" class="col-1 col-form-label">Account/Meter No:</label>
+            <div class="col-2">
+                <input name="consumerId" type="text" class="form-control" id="consumer-id" placeholder="Enter Account/Meter No" [(ngModel)]="boundModel.consumerId">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-4"></div>
+            <div class="col-8" style="text-align: right">
+                <button type="submit" [disabled]="!dataLoaded || submitting || !thisForm.form.valid">Filter</button>
+            </div>
+        </div>
+    </form>
+    <br>
+    <br>
+    <ng-template [ngIf]="bills.records">
+        <nav class="table-top-line text-right">
+            <div class="count-block">
+                Total Amount Selected: <span class="amount">{{totalSelectedAmount.toBdFormat()}}</span>
+                &nbsp; &nbsp;
+                Total Bill Selected: <span class="amount link-item" (click)="showSelecteds()">{{selectedCount}}</span>
+                &nbsp; &nbsp;
+                <ng-template [ngIf]="hasAnyNonBillableUtilitySelected() || isAnyUtilitySelectedWithAdditionalField()">
+                    Fill Additional Fields with Common Value:
+                    <i class="fa fa-cog" style="cursor: pointer" (click)="showHeaderAdditionalFieldsPopup(myHeaderAdditionalFieldsModal)"></i>
+                </ng-template>
+            </div>
+            <paginator class="page-block" [totalRecords]="bills.count" [offset]="bills.offset" (pageChange)="selectedsShowing ? changePageForSelecteds($event) : paymentService.loadTableData($event)"></paginator>
+        </nav>
+        <table class="table table-bordered table-striped table-sm">
+            <thead>
+            <tr>
+            	<th>Bill Data</th>
+                <th *ngIf="loggedUser.isGP">Account</th>
+                <th *ngIf="!loggedUser.isGP">Subsidiary Account</th>
+                <th>Biller Type</th>
+                <th>Biller Name</th>
+                <th>Bill No</th>
+                <th>Meter/Account</th>
+                <th>Bill Amount</th>
+                <th>Vat</th>
+                <th>Total Due</th>
+                <th>Service Charge</th>
+                <th>Total Payable</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Select</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let item of bills.records">
+            	<td>{{item.billData ? item.billData.alias : 'DETACHED'}}</td>
+                <td *ngIf="loggedUser.isGP">{{item.clientDivision.client.name}}</td>
+                <td *ngIf="!loggedUser.isGP">{{item.clientDivision.name}}</td>
+                <td>{{item.company.category.name}}</td>
+                <td>{{item.company.name}}</td>
+                <td>{{item.billNo}}</td>
+                <td>{{item.accountNo}}</td>
+                <ng-template [ngIf]="item.company.hasBill" [ngIfElse]="nobill">
+                    <td>{{(item.billAmount - (item.vat || 0)).toFixed(2)}}</td>
+                    <td>{{item.vat?.toFixed(2)}}</td>
+                    <td>{{item.billAmount.toFixed(2)}}</td>
+                    <td>{{item.serviceCharge.toFixed(2)}}</td>
+                    <td class="amount-cell">
+                        {{(item.billAmount + item.serviceCharge).toFixed(2)}}
+                        <ng-template [ngIf]="isUtilitySelectedWithAdditionalField(item.company)">
+                            &nbsp;
+                            <i class="fa fa-cog" style="cursor: pointer" title="Additional Field Values" (click)="showRowAdditionalFieldsPopup(myRowAdditionalFieldsModal, item)"></i>
+                        </ng-template>
+                    </td>
+                    <td>{{item.dueDate ? _moment(item.dueDate).format("Do MMM YYYY") : ""}}</td>
+                </ng-template>
+                <ng-template #nobill>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="amount-cell">
+                        <input type="number" 
+                        value="{{selectedBills.hasOwnProperty(item.id) ? selectedBills[item.id].amount : ''}}" 
+                        class="bill-text-amount-{{item.id}}" attr.bill-id="{{item.id}}" (change)="amountChange($event)">
+                        <ng-template [ngIf]="isUtilitySelectedWithAdditionalField(item.company)">
+                            &nbsp;
+                            <i class="fa fa-cog" style="cursor: pointer" title="Additional Field Values" (click)="showRowAdditionalFieldsPopup(myRowAdditionalFieldsModal, item)"></i>
+                        </ng-template>
+                    </td>
+                    <td></td>
+                </ng-template>
+                <td>{{item.status}}</td>
+                <td>
+                    <input type="checkbox" [checked]="selectedBills.hasOwnProperty(item.id)" id="select-checkbox-{{item.id}}" attr.bill-id="{{item.id}}" (change)="selectionChange($event, item)">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bottom-button-line text-right" style="margin-bottom: 35px">
+            <span>
+            	&nbsp; &nbsp;
+                <button class="btn btn-cancel" [disabled]="!selectedCount" (click)="clearSelection()">
+                    Clear All Selection
+                </button>
+                &nbsp; &nbsp;
+                <button class="btn btn-submit" [disabled]="selectedsShowing" (click)="toggleFiltered(true)">
+                    Select All (Filtered)
+                </button>
+                &nbsp; &nbsp;
+                <button class="btn btn-cancel" [disabled]="selectedsShowing || !selectedCount" (click)="toggleFiltered(false)">
+                    Unselect All (Filtered)
+                </button>
+                &nbsp; &nbsp;
+                <button class="btn btn-submit" (click)="toggleCurrentPage(!selectedsShowing && isMaximumSelectedInCurrentPage())">
+                    {{!selectedsShowing && isMaximumSelectedInCurrentPage() ? "Select All" : "Unselect All"}} (Current Page)
+                </button>
+                &nbsp; &nbsp;
+                <button class="btn btn-submit" [disabled]="!selectedCount" (click)="openAttachmentPopup(myModal)">
+                    Request For Payment
+                </button>
+            </span>
+        </div>
+    </ng-template>
+    <small class="refresh-bill-note">Note: <a routerLink="/payment-request/refresh-bills">Refresh Bills</a> Before Payment Request</small>
+</div> 
+
+<div bsModal #myModal="bs-modal"  class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Attachment? </h4>
+                <button type="button" class="close" (click)="myModal.hide()" aria-label="Close"> 
+                    <span aria-hidden="true">&times;</span>
+                </button> 
+            </div>
+            <div class="modal-body">
+                <ng-template [ngIf]="!attachedFile">
+                    You can attach a file for your reference. (Max 5MB)
+                </ng-template>
+                <ng-template [ngIf]="attachedFile">
+                    {{attachedFile.name}} ({{Util.toGbMbKb(attachedFile.size)}})
+                </ng-template>
+                &nbsp; &nbsp;
+                <span class="btn btn-submit btn-masked-file-input">
+                    <input type="file" (change)="readAttachedFile($event.target.files, myModal)">
+                    Attach &nbsp;
+                    <i class="fa fa-upload" style="font-size:15px"></i>
+                </span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" (click)="myModal.hide()">Cancel</button>
+            	<button type="button" class="btn btn-submit" (click)="createPayment(myModal, attachedFile)">
+                	Submit
+            	</button>        	
+            </div>
+        </div>
+    </div> 
+ </div>
+
+<div bsModal #myHeaderAdditionalFieldsModal="bs-modal"  class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Fill Multiple Fields With Common Value</h4>
+                <button type="button" class="close" (click)="myHeaderAdditionalFieldsModal.hide()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped table-sm">
+                    <thead>
+                    <tr>
+                        <th>Biller Name</th>
+                        <th>Field Label</th>
+                        <th>Field Value</th>
+                    </tr>
+                    </thead>
+
+                    <tbody #headerAdditionalFieldModal>
+                        <tr *ngIf="hasAnyNonBillableUtilitySelected()">
+                            <td>*</td>
+                            <td>Bill Amount</td>
+                            <td>
+                                <input type="text" class="header-amount-field">
+                            </td>
+                        </tr>
+                        <ng-template ngFor let-item [ngForOf]="headerAdditionalFieldsDataModel">
+                            <ng-template ngFor let-field [ngForOf]="item.fields">
+                                <tr attr.field-id="{{field.id}}" attr.company-id="{{item.id}}" *ngIf="!field.billdataInput">
+                                    <td>{{item.name}}</td>
+                                    <td>{{field.paramName}}</td>
+                                    <td>
+                                        <input type="text">
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </ng-template>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-submit" (click)="applyHeaderAdditionalFieldsValues(myHeaderAdditionalFieldsModal)">
+                    Apply
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div bsModal #myRowAdditionalFieldsModal="bs-modal"  class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Additional Field Values</h4>
+                <button type="button" class="close" (click)="myRowAdditionalFieldsModal.hide()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped table-sm">
+                    <thead>
+                    <tr>
+                        <th>Biller Name</th>
+                        <th>Field Label</th>
+                        <th>Field Value</th>
+                    </tr>
+                    </thead>
+
+                    <tbody #rowAdditionalFieldModal>
+                        <ng-template ngFor let-field [ngForOf]="rowAdditionalFieldsDataModel.fields">
+                            <tr attr.field-id="{{field.id}}" attr.bill-id="{{field.bill_id}}">
+                                <td>{{rowAdditionalFieldsDataModel.company}}</td>
+                                <td>{{field.name}}</td>
+                                <td>
+                                    <input type="text" value="{{field.value}}">
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-submit" (click)="applyRowAdditionalFieldsValues(myRowAdditionalFieldsModal)">
+                    Apply
+            	</button>        	
+            </div>
+        </div>
+    </div> 
+ </div> 

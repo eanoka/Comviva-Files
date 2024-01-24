@@ -1,0 +1,61 @@
+<nav class="table-top-line text-right">
+    <span *ngIf="pdf" class="download-icons download-request-report" (click)="downPdf()"><i class="fa fa-file-pdf-o"></i></span>
+    <a *ngIf="xls" class="download-icons" [href]="xls" download="{{file}}.xlsx"><i class="fa fa-file-excel-o"></i></a>
+   
+    <div class="count-block" *ngIf="totalAmount">Total Amount: <span class="amount">{{totalAmount.toBdFormat()}}</span></div>
+    &nbsp;&nbsp; &nbsp;
+    <div class="count-block" *ngIf="attachment"> Attachment: <span class="amount"><a href="{{App.basePath}}/paymentRequest/downloadPaymentRequestDocument?id={{paymentReqId}}" download="{{attachment.substring(attachment.indexOf('_') + 1)}}"> {{attachment.substring(attachment.indexOf('_') + 1)}}</a></span></div>
+   
+    <paginator class="page-block" [totalRecords]="bills.count" [offset]="bills.offset" (pageChange)="onChangePagination($event)"></paginator>
+</nav>
+<table class="table table-bordered table-striped table-sm">
+    <thead>
+    <tr>
+    	<th>Bill Data</th>
+        <th *ngIf="loggedUser.isGP">Account</th>
+        <th *ngIf="!loggedUser.isGP">Sub Account</th>
+        <th>Biller Type</th>
+        <th>Biller Name</th>
+        <th>Bill No</th>
+        <th>Meter/Account</th>
+        <th *ngIf="showTxnId">GPAY Transaction ID</th>
+        <th>Bill Amount</th>
+        <th>Vat</th>
+        <th>Total Due</th>
+        <th>Service Charge</th>
+        <th>Total Payable</th>
+        <th>Due Date</th>
+        <th>Status</th>
+        <th *ngIf="isActionEnabled()">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of bills.records" id="rowid-{{item.id}}" [ngStyle]="preSelect(item.id)?{'background-color': 'salmon'}:''" >
+    	<td>{{item.billData ? item.billData.alias : 'DETACHED'}}</td>
+        <td *ngIf="loggedUser.isGP">{{item.clientDivision.client.name}}</td>
+        <td *ngIf="!loggedUser.isGP">{{item.clientDivision.name}}</td>
+        <td>{{item.company.category.name}}</td>
+        <td>{{item.company.name}}</td>
+        <td>{{item.billNo}}</td>
+        <td>{{item.accountNo}}</td>
+        <td *ngIf="showTxnId">{{item.mfsTxnid}}</td>
+        <td>{{((item.billAmount || 0) - (item.vat || 0)).toBdFormat()}}</td> <!--bill amount can be zero for prepaid-->
+        <td>{{item.vat?.toBdFormat()}}</td>
+        <td>{{item.billAmount?.toBdFormat()}}</td>
+        <td>{{item.serviceCharge?.toBdFormat()}}</td>
+        <td class="amount-cell">{{(item.billAmount + (item.serviceCharge || 0)).toBdFormat()}}</td>
+        <td>{{item.dueDate ? _moment(item.dueDate).format("Do MMM YYYY") : ""}}</td>
+		<ng-template [ngIf]="item.status === 'Fail'" [ngIfElse]="OtherThanFail">
+        	<td (click)="showError(item.errorMessage)">
+        		<a href="javascript:void(0)">{{item.status}}</a>
+        	</td>
+        </ng-template>
+        <ng-template #OtherThanFail>
+        	<td>{{item.status}}</td>
+        </ng-template>
+        <!-- [ngStyle]="styleOne?{'background-color': 'red'} : {'background-color': 'blue'}" -->
+        <td *ngIf="isActionEnabled()" (click)="selectBillIdForRejecting(item.id);outPutSelectedBillIds();outPutSelectedBillIdsInPayment()">✘</td>
+    </tr>
+    </tbody>
+</table>
+<request-pdf-download *ngIf="pdfGenerating" (onDownload)="onDownload()" [requestId]="requestId" [showTxnId]="showTxnId"></request-pdf-download>

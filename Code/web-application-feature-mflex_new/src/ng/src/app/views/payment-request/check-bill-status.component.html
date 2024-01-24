@@ -1,0 +1,80 @@
+<div *ngIf="bills && bills.request && bills.request.lastHop">
+	<request-history [hops]="bills.hops" [bills]="bills"></request-history>
+</div>
+<form class="role-creation-form" (ngSubmit)="onSubmit(thisForm)" #thisForm="ngForm" *ngIf="!bills">
+    <div class="form-group row" *ngIf="loggedUser.isGP">
+        <label for="account" class="col-4 col-form-label">Account:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" id="account" name="account" required="" [class.is-invalid]="!accField.valid" [disabled]="!dataLoaded" [(ngModel)]="account" #accField="ngModel">
+                <option *ngIf="!account" [ngValue]="nullReference">{{'Select an account'}}</option>
+                <ng-template ngFor let-item [ngForOf]="clients" let-i="index">
+                    <option [ngValue]="item.id">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row" *ngIf="!loggedUser.isGP">
+        <label for="payment-request-sub-account" class="col-4 col-form-label">Sub Account:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <ng-select
+                    id="payment-request-sub-account"
+                    name="subAccount"
+                    [(ngModel)]="subAccount"
+                    [items]="divisionEntries"
+                    bindLabel="name"
+                    [disabled]="!dataLoaded"
+                    [multiple]="true" [closeOnSelect]="true"
+                    placeholder="Choose Sub Accounts">
+            </ng-select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="category" class="col-4 col-form-label">Biller Category:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" id="category" name="category" (ngModelChange)="company = nullReference" [disabled]="!dataLoaded" [(ngModel)]="category" #categoryField="ngModel">
+                <option [ngValue]="nullReference">Any Biller Category</option>
+                <ng-template ngFor let-item [ngForOf]="categories" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="company" class="col-4 col-form-label">Biller Company:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select name="company" class="form-control" id="company" [(ngModel)]="company" #companyField="ngModel">
+                <option [ngValue]="nullReference">Any Biller Company</option>
+                <ng-template ngFor let-item [ngForOf]="category && category.companies" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="accno" class="col-4 col-form-label">Meter/Account No:</label>
+        <div class="col-8">
+            <input name="accno" class="form-control" id="accno" [(ngModel)]="accno" #accField="ngModel">
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align: center">
+            <button type="submit" [disabled]="submitting || !dataLoaded || !thisForm.form.valid">Submit</button>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</form >
+<ng-template [ngIf]="bills">
+    <bill-table class="table-container" [pdf-download]="lastCacheSubmitData.requestId ? true : false" requestId="{{lastCacheSubmitData.requestId}}" [xls-link]="lastCacheSubmitData.requestId ? 'api/paymentRequest/downloadAsXls?id=' + lastCacheSubmitData.requestId : null" [onChangePagination]="onChangePagination.bind(this)" [bills]="bills" [class.loading]="submitting" download-file="Payment Request Details-{{lastCacheSubmitData.requestId}}" [showTxnId]="true"></bill-table>
+    <div class="bottom-button-line text-right">
+            <span>
+                <a class="btn btn-cancel" (click)="refineFilter()">
+                    Refine Filter
+                </a>
+                &nbsp; &nbsp;
+                <a *ngIf="loggedUser.permissions.includes(Actions.CREATE_PAYMENT_REQUEST)" class="btn btn-cancel" [routerLink]="'/payment-request/create'">
+                    Request For Payment
+                </a>
+            </span>
+    </div>
+</ng-template>

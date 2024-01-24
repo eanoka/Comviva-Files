@@ -1,0 +1,195 @@
+public url to fetch due bills:
+-------------------------------
+
+curl --location 'https://mfsbaastest.grameenphone.com/eig/' --header 'Content-Type: application/json' --data '{    "utility": "DSCO",    "consumer_id": "17021270",    "serviceFlowId": "DUEBILL",    "interfaceId": "DUEBILL",    "serviceType": "DUEBILL",    "params": {}}'
+
+
+
+changes:
+
+1. DpdcPostpainGetBillRequest.java
+2. DPDCPostpaidService.java
+3. DueBillRequest.java
+4. added lambok in porm.xml
+5. ValidationException.java
+6. BillController.java
+7. BillFetcher.java
+6. PostpaidService.java
+
+
+
+
+doubts:
+31-10-2023:
+-----------
+1. paybill api which shared is mobile api.
+2. how we need to get msisdn number for specific utility for receiver data(what would be receiver data)
+3. productId
+
+
+4. when initate payment, for validating pin we send a request to thridparty from communicator,
+	- what would be the pin
+	- PaymentRequestService.java (by passed the communicator call) and added "initated_time" which was null
+
+	- http://10.177.25.14:7890/GPTxn/CelliciumSelector?LOGIN=Ussd_Bearer1&PASSWORD=MPtc1ToayCkCMZZeHUu0snA3aUaPbSFQ9UzIkNGbVRU=&REQUEST_GATEWAY_CODE=CELLUSSD&requestText=
+	- WalletController.java - communicator
+	
+	
+	
+-----------------------------------------------------------
+
+doubts:
+02-11-2023:
+-----------
+1. comviva api is used in many places which is not working
+	api = mfs.api.path= http://10.177.25.14:7890/GPTxn/CelliciumSelector?LOGIN=Ussd_Bearer1&PASSWORD=MPtc1ToayCkCMZZeHUu0snA3aUaPbSFQ9UzIkNGbVRU=&REQUEST_GATEWAY_CODE=CELLUSSD&requestText=
+
+		-- BillPayer.java  -  associate(state, request, mfsChannel);  -- remove
+				- MFSService.java
+					-- associate()
+					-- deductWallet()
+					-- rollbackTransaction()
+					-- verifyPin
+					
+					
+					
+------------------------------------------------------------
+
+doubts:
+03-11-2023:
+
+		-- MFSService.java
+		mfs.datasource.default.schema=MMONEY_PP
+		mfs.datasource.jdbcUrl=jdbc:oracle:thin:@172.16.1.35:1511/test
+		
+		-- existing deductWallet api returns txn id which is used to getServiceChargeAndPaidAmount from above server (Only txn_id passed in the response)
+		-- hitting above server database to get getServiceChargeAndPaidAmount(BillPayer.java) where txnID got from mobiquity response is being passed.
+			So here what would be that txnID which we need to passed.
+			
+		-- The response shared for pay bill is final one? No http code and message returned from the API?
+		
+		
+		
+		----------------------------------------------
+		
+		-- Mobiquity hit for getting 
+		
+doubts:
+10-11-2023:		
+		
+		
+		
+		-- JGDCL or KGDCL or both same only typo error ? jgsl jalalabad gas
+		-- JGDCL need to send mobile number in the params
+		-- can billerName=jalalabad gas and billerCode = JGDCL differ? 
+		-- [{"code":"9999007","message":"Initiator Payment instrument id is not present","componentName":"AMS"}] when productID is 9 for desco
+		-- product id 12
+		
+		
+doubts:
+15-11-2023:	
+
+		-- insufficient balance in wallet, need to load the amount
+		-- 
+		
+		
+16-11-2023:			
+		
+		--- email and sms configuration : need to check existing implementations:
+		--- exiting implementation for handling ambigues transactions and timeout issue.
+		--- user management - flow understanding
+		--- 
+		
+		
+		
+		
+		Notes:
+		
+		--- old flow:---
+		--- if fails in mobiquity, adding dispute status in bill table.
+		--- if mobiquity get success and aggrigator fails, when dispute scheduler runs it takes dispute bills from bill table and gets the actutal from mflex_core.bill_pay_service_status table which added when mobiquity gets success response
+		
+		--- currently flow---
+		--- if success in mobiquity and fails in biller : need to be handled in mobiquity
+		--- if both mobiquity and biller pass and communictor gives time out. We need to get the transactions details from mobiquity and need api for this.
+		
+		
+		
+		Email Notes:
+		
+		-- EmailUtil.java
+		-- SMTP SERVER : email-notification-host=192.168.207.211
+		-- PORT : 25
+		-- FROM EMAIL : Corporate Bulk Bill Pay<gbp@grameenphone.com>
+		
+		-- MAIL BODY : <p><strong>Dear $user>name$</strong>,</p><p>Your bill payment requested on $task>create_time$ with id as <strong>$request_id$</strong> completed with following status.</p><p style\="text-align\: left; padding-left\: 150px;">Started On\: <strong>$task>start_time$</strong></p><p style\="text-align\: left; padding-left\: 150px;">Completed On\: <strong>$task>end_time$</strong></p><p style\="text-align\: left; padding-left\: 150px;">Total Bill Found\: <strong>$task>total_processed$</strong></p><p style\="text-align\: left; padding-left\: 150px;">Success\: <strong>$task>success_count$</strong></p><p style\="text-align\: left; padding-left\: 150px;">Failed\: <strong>$task>failed_count$</strong></p><p style\="text-align\: left; padding-left\: 150px;">In Dispute\: <strong>$task>dispute_count$</strong></p><p>Kind Regards,<br />GPAY Team</p>
+		
+		-- MAIL SUBJECT : Your requested bill payment is completed
+		
+		
+		Web Notification:
+		
+		-- notification_pay_bill=http:localhost:8080/api/notification/paymentComplete
+		
+		Pay Bill:
+		
+		-- Need test data for testing
+		
+		
+		--> deduct bill - >----------->
+					---> request 
+		--> biller timeout; -> disput
+		
+Note :
+20-11-2023:
+
+		-- Timeout error existing implementations.
+		-- SMS notification for paybill.
+		-- Web Notifications
+		
+		
+		task:
+		
+		-- pay bill testing.
+		-- Despute clarification with  client depedency
+		
+		
+		
+		Email Notification credentials:
+		
+		
+		from.email.address=DFS_TEST@grameenphone.com
+		mail.host=192.168.120.7
+		mail.port=587
+		
+		
+		
+		
+
+
+
+test:
+prepaid testing : 8877686787
+
+
+
+recent changes:
+
+PayBillService.java
+CallBackController.java
+model/post_paid_due_bill/PayBillCallBackRequest.java
+
+tables:
+mflex_core.request_histories
+mflex_core.bill_pay_service_status
+
+Scheduler:
+DisputeService.java
+BillPayServiceStatus.java // added orderID
+
+
+scheduler.properties
+		
+		
+		
+		

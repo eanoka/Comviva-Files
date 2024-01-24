@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <contextListener class="com.grameenphone.wipro.utility.common.LoggerStartupListener"/>
+
+    <appender name="NULL_LOG" class="ch.qos.logback.core.helpers.NOPAppender"/>
+
+    <appender name="HIBERNATE_LOG" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %X{session} %-5level %logger{36}.%M - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %X{session} %highlight(%-5level) %logger{36}.%M - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="TRACE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.dir}/trace.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %X{session} %logger{36}.%M - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.dir}/%d{MM_yyyy/'trace.'dd}.log.gz</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="HEALTH_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.dir}/health.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm} - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.dir}/%d{MM_yyyy/'health.'dd}.log.gz</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="com.grameenphone.wipro.extensions.spring.boot.beans.config" level="off" additivity="false"/>
+    <logger name="com.grameenphone.wipro.fmfs.cbp.config.MVCConfig" level="off" additivity="false"/>
+
+    <if condition='property("log.to.root").contains("only")'>
+        <then>
+            <logger name="com.grameenphone" level="trace" additivity="true">
+                <appender-ref ref="NULL_LOG"/>
+            </logger>
+        </then>
+        <else>
+            <if condition='property("log.to.root").contains("both")'>
+                <then>
+                    <logger name="com.grameenphone" level="trace" additivity="true">
+                        <appender-ref ref="TRACE_FILE"/>
+                    </logger>
+                </then>
+                <else>
+                    <logger name="com.grameenphone" level="trace" additivity="false">
+                        <appender-ref ref="TRACE_FILE"/>
+                    </logger>
+                </else>
+            </if>
+        </else>
+    </if>
+
+    <logger name="HealthLog" level="trace" additivity="false">
+        <appender-ref ref="HEALTH_FILE"/>
+    </logger>
+    <logger name="org.hibernate" level="off" additivity="false">
+        <appender-ref ref="NULL_LOG"/>
+    </logger>
+    <logger name="org.hibernate.SQL" level="${hibernate.log.level.sql}" additivity="false">
+        <appender-ref ref="HIBERNATE_LOG"/>
+    </logger>
+    <logger name="org.hibernate.orm.jdbc.bind" level="${hibernate.log.level.param.binder}" additivity="false">
+        <appender-ref ref="HIBERNATE_LOG"/>
+    </logger>
+    <logger name="org.hibernate.orm.jdbc.extract" level="${hibernate.log.level.param.extractor}" additivity="false">
+        <appender-ref ref="HIBERNATE_LOG"/>
+    </logger>
+    <root level="${root.log.level}">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

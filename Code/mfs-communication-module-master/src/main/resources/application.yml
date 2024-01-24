@@ -1,0 +1,11 @@
+flexmfs:
+    datasource:
+        driverClassName: com.mysql.cj.jdbc.Driver
+mfs:
+    datasource:
+        driverClassName: oracle.jdbc.driver.OracleDriver
+logging:
+    level:
+        org:
+            hibernate:
+                type: trace

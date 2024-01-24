@@ -1,0 +1,65 @@
+<form class="role-creation-form" (ngSubmit)="onSubmit(thisForm)" #thisForm="ngForm" *ngIf="!role">
+    <div class="form-group row">
+        <label for="editableRoleId" class="col-4 col-form-label">Role:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" [class.is-invalid]="editableRoleIdField.errors?.required" id="editableRoleId" name="id" [disabled]="!dataLoaded" [(ngModel)]="roleId" required="" #editableRoleIdField="ngModel">
+                <ng-template [ngIf]="!roleId">
+                    <option [ngValue]="nullReference">{{'Select A Role'}}</option>
+                </ng-template>
+                <ng-template ngFor let-item [ngForOf]="roles" let-i="index">
+                    <option [ngValue]="item.id">{{item.name}}</option>
+                </ng-template>
+            </select>
+            <div *ngIf="editableRoleIdField.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align: center">
+            <button type="submit" [disabled]="submitting || !dataLoaded || !thisForm.form.valid">Edit</button>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</form>
+<form class="role-creation-form" (ngSubmit)="onSubmit(thisForm)" #thisForm="ngForm" *ngIf="role">
+    <div class="form-group row">
+        <label for="name" class="col-4 col-form-label">Name:</label>
+        <div class="col-8">
+            <input name="name" type="text" class="form-control" [ngClass]="{'is-invalid': nameField.errors?.required || nameField.errors?.unique}" id="name" [(ngModel)]="name" required="" #nameField="ngModel" [validate-async]="{unique: duplicateNameChecker.bind(this)}">
+            <div *ngIf="nameField.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+            <div *ngIf="nameField.errors?.unique" class="invalid-feedback">
+                A Role with this name already exist
+            </div>
+        </div>
+    </div>
+    <div class="form-group row" *ngIf="app.user.permissions.includes(actions.CHANGE_ROLE)">
+        <label for="inherit" class="col-4 col-form-label">Inherited From:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" [class.is-invalid]="inheritField.errors?.required" id="inherit" name="inheritedFrom" [disabled]="!dataLoaded" [(ngModel)]="inherit" required="" #inheritField="ngModel">
+                <ng-template [ngIf]="!inherit">
+                    <option [ngValue]="nullReference">{{'Select A Role'}}</option>
+                </ng-template>
+                <ng-template ngFor let-item [ngForOf]="roles" let-i="index">
+                    <option [ngValue]="item.id">{{item.name}}</option>
+                </ng-template>
+            </select>
+            <div *ngIf="inheritField.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align: center">
+            <input type="hidden" [(ngModel)]="roleId" value="{{role.id}}" name="id">
+            <button type="button" class="btn btn-submit btn-cancel" (click)="backToSelection()">Cancel</button>
+            &nbsp; &nbsp;
+            <button type="submit" [disabled]="submitting || !dataLoaded || !thisForm.form.valid">Update</button>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</form>

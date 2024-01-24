@@ -1,0 +1,22 @@
+.uploading {
+    * {
+        opacity: .6;
+    }
+
+    outline: 4px dashed #999999;
+    position: relative;
+
+    &::after {
+        content: 'Your Files Is Being Uploaded ......';
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        color: #999999;
+        font-weight: bold;
+        font-size: 40px;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        text-align: center;
+    }
+}

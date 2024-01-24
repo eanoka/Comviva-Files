@@ -1,0 +1,5 @@
+<div class="top-count-line">You have {{requestCount}} request{{requestCount > 1 ? "s" : ""}} for approval</div>
+<div class="navigation-blocks">
+    <a routerLink="/payment-approval/approve-for-payment" class="two-line" [class.left]="sessionUser.permissions.includes(Actions.VIEW_REQUEST_STATUS)">Waiting For Approval ({{requestCount}})</a>
+    <a *ngIf="sessionUser.permissions.includes(Actions.VIEW_REQUEST_STATUS)" routerLink="/payment-request/request-status" [state]="{start: monthsAgo}" class="right">History</a>
+</div>

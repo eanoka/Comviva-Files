@@ -1,0 +1,64 @@
+<form class="role-selection-form" (ngSubmit)="onSubmit(thisForm)" #thisForm="ngForm" *ngIf="!permissions">
+    <div class="form-group row">
+        <label for="editableRoleId" class="col-4 col-form-label">Role:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" [class.is-invalid]="editableRoleIdField.errors?.required" id="editableRoleId" name="id" [disabled]="!dataLoaded" [(ngModel)]="roleId" required="" #editableRoleIdField="ngModel">
+                <ng-template [ngIf]="!roleId">
+                    <option [ngValue]="nullReference">{{'Select A Role'}}</option>
+                </ng-template>
+                <ng-template ngFor let-item [ngForOf]="roles" let-i="index">
+                    <option [ngValue]="item.id">{{item.name}}</option>
+                </ng-template>
+            </select>
+            <div *ngIf="editableRoleIdField.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align: center">
+            <button type="submit" [disabled]="submitting || !dataLoaded || !thisForm.form.valid">View Permissions</button>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</form>
+<ng-template [ngIf]="permissions">
+    <table class="table table-bordered table-striped table-sm">
+        <thead>
+            <tr>
+                <th>
+                    <ng-template [ngIf]="!permissions.role.readonly && permissions.role.id != sessionUser.role.id && ownPermissions.includes(editPermission)">
+                        <input type="checkbox" (change)="changeMode()" [checked]="editMode" [(ngModel)]="editMode"> &nbsp; Edit
+                    </ng-template>
+                </th>
+                <th>Allow</th>
+                <th *ngIf="editMode">Inherit</th>
+                <th>Deny</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of renderableActions; let i = index" [class.disabled]="editMode && !ownPermissions.includes(item)" (change)="onInputChange($event, item)">
+                <ng-template let-_this [ngTemplateOutletContext]="{ $implicit: displayablePermissions.findSimilar(item, allowDenyEquality) }" [ngTemplateOutlet]="_this" #_this>
+                    <td class="name-column">{{item}}</td>
+                    <td class="input-column allow-column"><input [disabled]="!editMode || !ownPermissions.includes(item)" type="radio" name="perm-group-{{i}}" value="A" [checked]="_this?.allow"></td>
+                    <td class="input-column inherit-column" *ngIf="editMode"><input [disabled]="!editMode || !ownPermissions.includes(item)" type="radio" name="perm-group-{{i}}" value="I" [checked]="!_this || !(_this.allow || _this.deny)"></td>
+                    <td class="input-column deny-column"><input [disabled]="!editMode || !ownPermissions.includes(item)" type="radio" name="perm-group-{{i}}" value="D" [checked]="_this?.deny"></td>
+                </ng-template>
+            </tr>
+        </tbody>
+    </table>
+    <div class="bottom-button-line text-right">
+        <span>
+            <button class="btn btn-cancel" (click)="reselectRole()">
+                Select Another
+            </button>
+            <ng-template [ngIf]="editMode">
+                &nbsp; &nbsp;
+                <button class="btn btn-submit" [disabled]="submitting" (click)="updateChanges()">
+                    Update Changes
+                </button>
+            </ng-template>
+        </span>
+    </div>
+</ng-template>

@@ -1,0 +1,4 @@
+<alert *ngFor="let alert of alerts" [type]="alert.type" [dismissible]="alert.dismissible" [dismissOnTimeout]="alert.timeout" attr.id="snackbar-alert-{{alert.id}}" >
+    <div *ngIf="alert.html else text" [innerHTML]="alert.html"></div>
+    <ng-template #text>{{alert.msg}}</ng-template>
+</alert>

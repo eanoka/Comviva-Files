@@ -1,0 +1,67 @@
+.approver-step {
+    display: flex;
+    margin-left: 20px;
+
+    &.step-done {
+        border-left: 1px solid limegreen;
+
+        .approver-step-icon {
+            color: limegreen;
+        }
+    }
+
+    &.step-waiting {
+        border-left: 1px solid rgb(29, 137, 226);
+
+        .approver-step-icon {
+            color: rgb(29, 137, 226);
+
+            i + i {
+                font-size: 12px;
+                left: -5px;
+                top: -28px;
+            }
+        }
+    }
+
+    &.step-not-initiated {
+        border-left: 1px solid rgb(128, 128, 128);
+
+        .approver-step-icon {
+            color: rgb(128, 128, 128);
+        }
+    }
+
+    &.step-reject {
+        border-left: 1px solid red;
+
+        .approver-step-icon {
+            color: rgb(225, 49, 30);
+        }
+    }
+
+    &:last-child {
+        border-left: 1px solid #f0f3f5;
+    }
+
+    .approver-step-icon {
+        flex: 30px 0 0;
+
+        i {
+            font-size: 25px;
+            position: relative;
+            left: -11px;
+            top: -2px;
+            background-color: #f0f3f5;
+        }
+    }
+
+    .approver-step-detail {
+        flex: 0px 1 1;
+        margin-bottom: 10px;
+    }
+}
+
+.list-style-none {
+	list-style-type: none;
+}

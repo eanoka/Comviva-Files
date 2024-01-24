@@ -1,0 +1,70 @@
+.accordion {
+    .accordion-bar {
+        display: block;
+        cursor: pointer;
+        padding: $sidebar-nav-link-padding-y $sidebar-nav-link-padding-x;
+        color: $sidebar-nav-link-color;
+        text-decoration: none;
+        background: $sidebar-nav-link-bg;
+        @include borders($sidebar-nav-link-borders);
+
+        &:hover {
+            color: $sidebar-nav-link-hover-color;
+            background: $sidebar-nav-link-hover-bg;
+            @include borders($sidebar-nav-link-hover-borders);
+
+            &.accordion-bar-toggle::before {
+                background-image: $sidebar-nav-dropdown-indicator-hover;
+            }
+        }
+    }
+
+    .accordion-bar-toggle {
+        position: relative;
+        background-color: #203864;
+
+        &::before {
+            position: absolute;
+            top: 50%;
+            right: $sidebar-nav-link-padding-x;
+            display: block;
+            width: 15px;
+            height: 15px;
+            margin-top: -7px;
+            padding: 0;
+            content: "";
+            background-image: $sidebar-nav-dropdown-indicator;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: transform .3s;
+        }
+    }
+
+    .accordion-bar-open {
+        background: $sidebar-nav-dropdown-bg;
+
+        &.accordion-bar-toggle::before {
+            transform: rotate(-90deg);
+        }
+    }
+
+    .accordion-bar-label {
+        display: block;
+        padding: ($sidebar-nav-link-padding-y / 8) $sidebar-nav-link-padding-x;
+        color: $sidebar-nav-title-color;
+
+        &:hover {
+            color: $sidebar-color;
+            text-decoration: none;
+        }
+    }
+
+    .accordion-body {
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 0;
+        background-color: #f0f3f5;
+        border-bottom: 1px solid #c8ced3;
+        border-left: 1px solid #c8ced3;
+        border-right: 1px solid #c8ced3;
+    }
+}

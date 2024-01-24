@@ -1,0 +1,8 @@
+<div class="top-count-line">You have {{requestCount}} approved payment request{{requestCount > 1 ? "s" : ""}}</div>
+<div class="navigation-blocks">
+    <a routerLink="/payment/bill-payment" class="two-line" [class.left]="sessionUser.permissions.includes(Actions.VIEW_REQUEST_STATUS)">Approved Payment Request ({{requestCount}})</a>
+    <ng-template [ngIf]="sessionUser.permissions.includes(Actions.VIEW_REQUEST_STATUS)">
+        <a routerLink="/payment-request/request-status" [state]="{my: true, start: monthsAgo}" class="center">My Requests</a>
+        <a routerLink="/payment-request/request-status" [state]="{start: monthsAgo}" class="right">History</a>
+    </ng-template>
+</div>

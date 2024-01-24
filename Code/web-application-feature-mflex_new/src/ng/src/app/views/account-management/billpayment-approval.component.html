@@ -1,0 +1,130 @@
+<table class="table table-bordered table-striped table-sm" (change)="modelChanged = true">
+    <thead>
+    <tr>
+        <th>Status Text</th>
+        <th>Action Name</th>
+        <th>Permitted For Users</th>
+        <th>Permitted For Roles</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody #tbody>
+    <tr>
+        <td>
+            <input type="text" disabled class="form-control" value="Waiting For Approval">
+        </td>
+        <td>
+            <input type="text" disabled class="form-control" value="Approve Payment Request">
+        </td>
+        <td>
+            <ng-select (change)="modelChanged = true" *ngIf="dataLoaded"
+                    name="validator-users-first"
+                    [(ngModel)]="model.firstLevelApprover.users"
+                    [items]="allUsers"
+                    bindLabel="name"
+                    [multiple] = "true" [closeOnSelect] = "true"
+                    placeholder="Choose Users">
+            </ng-select>
+        </td>
+        <td>
+            <ng-select (change)="modelChanged = true" *ngIf="dataLoaded"
+                    name="validator-roles-first"
+                    [(ngModel)]="model.firstLevelApprover.roles"
+                    bindLabel="name"
+                    [items]="allRoles"
+                    [multiple] = "true" [closeOnSelect] = "true"
+                    placeholder="Choose Roles">
+            </ng-select>
+        </td>
+        <td>
+            <span class="fa-stack action-item" *ngIf="model.hops.length == 0" (click)="addNew()">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <i class="fa fa-plus fa-stack-1x"></i>
+            </span>
+        </td>
+    </tr>
+    <tr *ngFor="let hop of model.hops; index as i; first as isFirst; last as isLast">
+        <td>
+            <input type="text" class="form-control" [(ngModel)]="hop.hop.displayStatus">
+        </td>
+        <td>
+            <input type="text" class="form-control" [(ngModel)]="hop.hop.requiredAction.name">
+        </td>
+        <td>
+            <ng-select (change)="modelChanged = true"
+                    name="validator-users-{{i}}"
+                    [(ngModel)]="hop.users"
+                    bindLabel="name"
+                    [items]="allUsers"
+                    [multiple] = "true" [closeOnSelect] = "true"
+                    placeholder="Choose Users">
+            </ng-select>
+        </td>
+        <td>
+            <ng-select (change)="modelChanged = true"
+                    name="validator-roles-{{i}}"
+                    [(ngModel)]="hop.roles"
+                    bindLabel="name"
+                    [items]="allRoles"
+                    [multiple] = "true" [closeOnSelect] = "true"
+                    placeholder="Choose Roles">
+            </ng-select>
+        </td>
+        <td>
+            <span class="fa-stack action-item" *ngIf="!isFirst" (click)="moveUp(i)">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <i class="fa fa-arrow-up fa-stack-1x"></i>
+            &nbsp;
+            </span>
+            <span class="fa-stack action-item" *ngIf="!isLast" (click)="moveDown(i)">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <i class="fa fa-arrow-down fa-stack-1x"></i>
+            &nbsp;
+            </span>
+            <span class="fa-stack action-item" (click)="removeIt(i)">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <i class="fa fa-minus fa-stack-1x"></i>
+            </span>
+            <span class="fa-stack action-item" *ngIf="isLast" (click)="addNew()">
+                <i class="fa fa-circle-thin fa-stack-2x"></i>
+                <i class="fa fa-plus fa-stack-1x"></i>
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" disabled class="form-control" value="Approved">
+        </td>
+        <td>
+            <input type="text" disabled class="form-control" value="Initiate Payment">
+        </td>
+        <td>
+            <ng-select (change)="modelChanged = true" *ngIf="dataLoaded"
+                        name="validator-users-last"
+                        [(ngModel)]="model.lastLevelApprover.users"
+                        [items]="allUsers"
+                        bindLabel="name"
+                        [multiple] = "true" [closeOnSelect] = "true"
+                        placeholder="Choose Users">
+            </ng-select>
+        </td>
+        <td>
+            <ng-select (change)="modelChanged = true" *ngIf="dataLoaded"
+                        name="validator-roles-last"
+                        [(ngModel)]="model.lastLevelApprover.roles"
+                        [items]="allRoles"
+                        bindLabel="name"
+                        [multiple] = "true" [closeOnSelect] = "true"
+                        placeholder="Choose Roles">
+            </ng-select>
+        </td>
+        <td>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div class="bottom-button-line text-right">
+    <button class="btn btn-submit" (click)="submitUpdatedData()" [disabled]="!modelChanged">
+        Submit
+    </button>
+</div>

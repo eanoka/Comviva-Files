@@ -1,0 +1,114 @@
+<form class="role-creation-form" (ngSubmit)="onSubmit(thisForm)" #thisForm="ngForm" *ngIf="!records">
+    <div class="form-group row" *ngIf="loggedUser.isGP">
+        <label for="account" class="col-4 col-form-label">Account:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" id="account" name="account" required="" [class.is-invalid]="!accField.valid" [disabled]="!dataLoaded" [(ngModel)]="account" #accField="ngModel">
+                <option *ngIf="!account" [ngValue]="nullReference">{{'Select an account'}}</option>
+                <ng-template ngFor let-item [ngForOf]="clients" let-i="index">
+                    <option [ngValue]="item.id">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="category" class="col-4 col-form-label">Biller Category:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" id="category" name="category" (ngModelChange)="company = nullReference" [disabled]="!dataLoaded" [(ngModel)]="category" #categoryField="ngModel">
+                <option [ngValue]="nullReference">{{'Any Category'}}</option>
+                <ng-template ngFor let-item [ngForOf]="categories" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="company" class="col-4 col-form-label">Biller Company:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select name="company" class="form-control" id="company" [disabled]="!dataLoaded" [(ngModel)]="company" #companyField="ngModel">
+                <option [ngValue]="nullReference">{{'Any Company'}}</option>
+                <ng-template ngFor let-item [ngForOf]="category && category.companies" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="start" class="col-4 col-form-label">From Date:</label>
+        <div class="col-8">
+            <input name="start" type="date" class="form-control" [ngClass]="{'is-invalid': !startField.valid}" id="start" [(ngModel)]="start" #startField="ngModel" [validate]="{maxdiff: {ref: endField, type: 'date', diff: App.getConfig('report.max.duration.months') * 30 * 24 * 60 * 60 * 1000}, trigger: endField}" required="">
+            <div *ngIf="startField.errors?.maxdiff" class="invalid-feedback">
+                Duration can't be greater than {{App.getConfig('report.max.duration.months')}} months
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="end" class="col-4 col-form-label">To Date:</label>
+        <div class="col-8">
+            <input type="date" class="form-control" [class.is-invalid]="!endField.valid" id="end" name="end" [(ngModel)]="end" #endField="ngModel" [validate]="{gte: {ref: startField, type: 'date'}, trigger: startField}">
+            <div *ngIf="endField.errors?.gte" class="invalid-feedback">
+                To Date should be greater than From Date
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align: center">
+            <input type="hidden" name="type" value="{{type}}" [(ngModel)]="type">
+            <button type="submit" [disabled]="submitting || !dataLoaded || !thisForm.form.valid">Submit</button>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</form>
+<ng-template [ngIf]="records">
+    <nav class="table-top-line text-right">
+        <a class="download-icons" [href]="'api/report/downloadReportData?' + $.param(lastCacheSubmitData)" download="Transaction Report.xlsx"><i class="fa fa-file-excel-o"></i></a>
+        <paginator class="page-block" [totalRecords]="count" [offset]="offset" (pageChange)="onChangePagination($event)"></paginator>
+    </nav>
+    <table class="table table-bordered table-striped table-sm">
+        <thead>
+        <tr>
+            <th *ngIf="loggedUser.isGP">Account</th>
+            <th *ngIf="!loggedUser.isGP">Sub Account</th>
+            <th>Transaction Date</th>
+            <th>Biller Name</th>
+            <th>MSISDN</th>
+            <th>Meter/Account</th>
+            <th>Bill Number</th>
+            <th>Bill Amount</th>
+            <th>Vat</th>
+            <th>Service Charge</th>
+            <th>Paid Amount</th>
+            <th>Biller Transaction Id</th>
+            <th>GPAY Transaction Id</th>
+            <th>Reversal Transaction Id</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of records">
+            <td *ngIf="loggedUser.isGP">{{item.account}}</td>
+            <td *ngIf="!loggedUser.isGP">{{item.subAccount}}</td>
+            <td>{{moment(item.paymentDate, 'DD/MM/YYYY HH:mm:ss').format("Do MMM YYYY")}}</td>
+            <td>{{item.company_name}}</td>
+            <td>{{item.customerMsisdn}}</td>
+            <td>{{item.accountNo}}</td>
+            <td>{{item.billNo}}</td>
+            <td>{{(+item.amount)?.toBdFormat()}}</td>
+            <td>{{(+item.custom_vat)?.toBdFormat()}}</td>
+            <td>{{item.serviceCharge?.toBdFormat()}}</td>
+            <td>{{item.paidAmount?.toBdFormat()}}</td>
+            <td>{{item.thirdPartyTxnid}}</td>
+            <td>{{item.mfsTxnid}}</td>
+            <td>{{item.reversalTxnid}}</td>
+            <td>{{item.status}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="bottom-button-line text-right">
+        <span>
+            <a class="btn btn-cancel" (click)="refineFilter()">
+                Refine Filter
+            </a>
+        </span>
+    </div>
+</ng-template>

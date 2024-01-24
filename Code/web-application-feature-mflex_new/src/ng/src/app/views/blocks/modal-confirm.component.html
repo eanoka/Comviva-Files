@@ -1,0 +1,19 @@
+<div bsModal #modal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{title}}</h4>
+                <button *ngIf="buttons.abort" type="button" class="close" (click)="close('abort')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{body}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" *ngIf="buttons.cancel" (click)="close('cancel')">{{labels.cancel}}</button>
+                <button type="button" class="btn btn-submit" (click)="close('ok')">{{labels.ok}}</button>
+            </div>
+        </div>
+    </div>
+</div>

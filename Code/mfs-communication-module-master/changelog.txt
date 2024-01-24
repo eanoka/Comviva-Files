@@ -1,0 +1,11 @@
+#Add configurations
+
+sslwireless.isp.GR16395599375370.auth.key=GR16395599375370
+sslwireless.isp.GR16395599375370.secret.key=c3IQTY2Yh3EJHzke
+
+sslwireless.isp.AUTH-KEY=ovpdJuhHqyHvSJ8BsI5Gi.QWCQXsRCq.
+sslwireless.isp.STK-CODE=GPAY
+sslwireless.isp.bill.info.url=http://api.sslwireless.com/api/bill-info
+sslwireless.isp.bill.payment.url=http://api.sslwireless.com/api/bill-payment
+sslwireless.isp.bill.status.url=http://api.sslwireless.com/api/bill-status
+sslwireless.isp.use.proxy=true

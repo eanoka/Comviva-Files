@@ -1,0 +1,169 @@
+<div class="accordion" style="margin-bottom: 15px">
+    <div class="accordion-bar accordion-bar-toggle" [class.accordion-bar-open]="!collapse" (click)="collapse = !collapse">
+        Approval History
+    </div>
+    <div class="accordion-body" *ngIf="!collapse">
+        <div class="approver-step step-done">
+            <div class="approver-step-icon">
+                <i class="fa fa-check-circle"></i>
+            </div>
+            <div class="approver-step-detail">
+                <div><span class="detail-head">Request ID:</span> <span class="detail-body"><strong>{{_u.toPRId(bills.request.id)}}</strong></span></div>
+                <div><span class="detail-head">Requested By:</span> <span class="detail-body">{{bills.request.requester}} &lt;{{bills.request.requesterEmail}}&gt;</span></div>
+                <div><span class="detail-head">Requested On:</span> <span class="detail-body">{{moment(bills.request.date).format("Do MMM YYYY HH:mm:ss")}}</span></div>
+            </div>
+        </div>
+		<ng-template #executors let-users="users">
+			{{users.length > 0 ? users[0].name + " &lt;" + users[0].email + "&gt;" + (users.length > 1 ? ", " + users[1].name + " &lt;" + users[1].email + "&gt;" : "") : ""}}
+			<ng-template [ngIf]="users.length > 2">
+				&nbsp; &nbsp; <button (click)="showPendingAtUsers(users, myModal)">...</button>
+			</ng-template>
+		</ng-template>
+        <ng-template ngFor let-hop [ngForOf]="bills.hops">
+			<ng-template [ngIf]="hop.workflowHop.code == 'WFA' || hop.workflowHop.code == 'WFA_DIS'" [ngIfElse]="notInApproval">
+				<ng-template [ngIf]="hop.executedBy" [ngIfElse]="notApprovalExecuted">
+					<div class="approver-step step-done">
+						<div class="approver-step-icon">
+							<i class="fa fa-check-circle"></i>
+						</div>
+						<div class="approver-step-detail">
+							<div><span class="detail-head">Approved By:</span> <span class="detail-body">{{hop.executedBy.name}} &lt;{{hop.executedBy.email}}&gt;</span></div>
+							<div><span class="detail-head">Approved on:</span> <span class="detail-body">{{moment(hop.executionTime).format("Do MMM YYYY HH:mm:ss")}}</span></div>
+							<div><span class="detail-head">Comment:</span> <span class="detail-body">{{hop.comment}}</span></div>
+						</div>
+					</div>
+				</ng-template>
+				<ng-template #notApprovalExecuted>
+					<div class="approver-step step-waiting">
+						<div class="approver-step-icon">
+							<i class="fa fa-circle-o"></i>
+							<i class="fa fa-hourglass-start"></i>
+						</div>
+						<div class="approver-step-detail">
+							<div><span class="detail-head">Waiting For Approval</span></div>
+							<div>
+								<span class="detail-head">Pending At:</span>
+								<span class="detail-body">
+									<ng-container *ngTemplateOutlet="executors; context: {users: hop.possibleExecutors}"></ng-container>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="approver-step step-not-initiated">
+						<div class="approver-step-icon">
+							<i class="fa fa-minus-circle"></i>
+						</div>
+						<div class="approver-step-detail">
+							<div><span class="detail-head">Payment Initiate</span></div>
+						</div>
+					</div>
+					<div class="approver-step step-not-initiated">
+						<div class="approver-step-icon">
+							<i class="fa fa-minus-circle"></i>
+						</div>
+						<div class="approver-step-detail">
+							<div><span class="detail-head">Payment Execute</span></div>
+						</div>
+					</div>
+				</ng-template>
+			</ng-template>
+			<ng-template #notInApproval>
+				<ng-template [ngIf]="hop.workflowHop.code == 'WPI'" [ngIfElse]="notInInitiate">
+					<ng-template [ngIf]="hop.executedBy" [ngIfElse]="notInitiateExecuted">
+						<div class="approver-step step-done">
+							<div class="approver-step-icon">
+								<i class="fa fa-check-circle"></i>
+							</div>
+							<div class="approver-step-detail">
+								<div><span class="detail-head">Payment Initiated By:</span> <span class="detail-body">{{hop.executedBy.name}} &lt;{{hop.executedBy.email}}&gt;</span></div>
+								<div><span class="detail-head">Payment Scheduled For Execution On:</span> <span class="detail-body">{{moment(hop.executionTime).format("Do MMM YYYY HH:mm:ss")}}</span></div>
+								<div><span class="detail-head">Comment:</span> <span class="detail-body">{{hop.comment}}</span></div>
+							</div>
+						</div>
+					</ng-template>
+					<ng-template #notInitiateExecuted>
+						<div class="approver-step step-waiting">
+							<div class="approver-step-icon">
+								<i class="fa fa-circle-o"></i>
+								<i class="fa fa-hourglass-start"></i>
+							</div>
+							<div class="approver-step-detail">
+								<div><span class="detail-head">Waiting for Payment Initiation</span></div>
+								<div><span class="detail-head">Pending At:</span> <span class="detail-body"><ng-container *ngTemplateOutlet="executors; context: {users: hop.possibleExecutors}"></ng-container></span></div>
+							</div>
+						</div>
+						<div class="approver-step step-not-initiated">
+							<div class="approver-step-icon">
+								<i class="fa fa-minus-circle"></i>
+							</div>
+							<div class="approver-step-detail">
+								<div><span class="detail-head">Payment Execute</span></div>
+							</div>
+						</div>
+					</ng-template>
+				</ng-template>
+				<ng-template #notInInitiate>
+					<ng-template [ngIf]="hop.workflowHop.code == 'SFE'" [ngIfElse]="notScheduled">
+						<ng-template [ngIf]="!hop.executionTime">
+							<div class="approver-step step-not-initiated">
+								<div class="approver-step-icon">
+									<i class="fa fa-minus-circle"></i>
+								</div>
+								<div class="approver-step-detail">
+									<div><span class="detail-head">Payment Execute</span></div>
+								</div>
+							</div>
+						</ng-template>
+					</ng-template>
+					<ng-template #notScheduled>
+						<ng-template [ngIf]="hop.workflowHop.code == 'CPL'" [ngIfElse]="notComplete">
+							<div class="approver-step step-done">
+								<div class="approver-step-icon">
+									<i class="fa fa-check-circle"></i>
+								</div>
+								<div class="approver-step-detail">
+									<div><span class="detail-head">Payment Completed On:</span> <span class="detail-body">{{moment(hop.initiationTime).format("Do MMM YYYY HH:mm:ss")}}</span></div>
+								</div>
+							</div>
+						</ng-template>
+						<ng-template #notComplete>
+							<ng-template [ngIf]="hop.workflowHop.code == 'REJ'">
+								<div class="approver-step step-reject">
+									<div class="approver-step-icon">
+										<i class="fa fa-exclamation-circle"></i>
+									</div>
+									<div class="approver-step-detail">
+										<div><span class="detail-head">Payment Rejected</span></div>
+									</div>
+								</div>
+							</ng-template>
+						</ng-template>
+					</ng-template>
+				</ng-template>
+			</ng-template>
+        </ng-template>
+    </div>
+</div>
+
+<div bsModal #myModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+             <div class="modal-header">
+                <h4 class="modal-title">Pending At:</h4>
+                <button type="button" class="close" (click)="myModal.hide()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+      				<ul>
+        				<li *ngFor="let user of current_step_executors">{{user.name}} &lt;{{user.email}}&gt;</li>
+      				</ul>           	
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-submit" (click)="myModal.hide()">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>

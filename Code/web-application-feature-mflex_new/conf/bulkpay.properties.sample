@@ -1,0 +1,90 @@
+log.dir=logs
+
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.use_sql_comments=true
+spring.jpa.hibernate.ddl-auto=update
+
+hibernate.log.level.sql=off
+hibernate.log.level.param.binder=off
+hibernate.log.level.param.extractor=off
+root.log.level=off
+
+cbp.datasource.jdbcUrl = jdbc:mysql://10.10.x.x/db?autoReconnect=true&useSSL=false
+cbp.datasource.username =
+cbp.datasource.password =
+cbp.datasource.maximumPoolSize=5
+
+report.datasource.jdbcUrl=jdbc:mysql://10.10.y.y/db?autoReconnect=true&useSSL=false
+report.datasource.username=
+report.datasource.password=
+report.datasource.maximumPoolSize=5
+
+session.timeout=3h
+
+#bytes
+request.log.payload.max.size=1000
+
+saml.idp.entity_id=https://idp.grameenphone.com/sso/saml2/saml2/idp/metadata.php
+saml.idp.web_sso_url=https://idp.grameenphone.com/sso/saml2/saml2/idp/SSOService.php
+saml.idp.logout_url=https://idp.grameenphone.com/sso/saml2/saml2/idp/SingleLogoutService.php
+saml.sp.callback=http://localhost:3030/
+saml.sp.base_url=http://localhost:3030
+saml.sp.entity_id=/cbbpd/api/saml/metadata
+
+idp.user.url.base=https://idp.grameenphone.com/api/v1/idp/service-providers/5/users
+idp.api.key=dqm3PIZQ5P7ZYluQu3dSX4puvKMjWnZN
+idp.is.proxy.required=true
+
+#Optional - If any value given, that login id will automatically be logged
+auto.login=
+#Optional
+heartbit.urls=
+
+#mail configuration
+email-notification-from=Grameenphone Bulk Bill Pay<cbbp@grameenphone.com>
+email-notification-host=192.168.207.211
+email.template.payment.request.create.notification=<p><strong>Dear Approvers</strong>,</p><p>A Payment Request requested by $initiator>name$ on $request>createTime$ with id <strong>#$request_id$</strong> is waiting for your approval</p><p>Kind Regards,<br/>GPAY Team</p>
+subject.payment.request.create.notification=Payment Request Waiting For Approval
+email.template.payment.request.approved.notification=<p><strong>Dear Payers</strong>,</p><p>A Payment Request requested by $initiator>name$ on $request>createTime$ with id <strong>#$request_id$</strong> was approved by $request>lastHop>previousHop>executedBy>name$ on $request>lastHop>previousHop>executionTime$ is now ready for payment</p>$if:request>lastHop>previousHop>comment$<br/><strong>Approver's Comment<br>$request>lastHop>previousHop>comment$</strong><br/>$if$<p>Kind Regards,<br/>GPAY Team</p>
+subject.payment.request.approved.notification=Payment Request Ready For Payment
+email.template.payment.request.reject.notification=<p><strong>Dear $initiator>name$</strong>,</p><p>The Payment Request requested by you on $request>createTime$ with id <strong>#$request_id$</strong> was rejected by $request>lastHop>previousHop>executedBy>name$ on $request>lastHop>previousHop>executionTime$</p>$if:request>lastHop>previousHop>comment$<br/><strong>Approver's Comment<br>$request>lastHop>previousHop>comment$</strong><br/>$if$<p>Kind Regards,<br />GPAY Team</p>
+subject.payment.request.reject.notification=Payment Request Approval Rejected
+email.template.payment.request.initiate.notification=<p><strong>Dear $initiator>name$</strong>,</p><p>The Payment Request requested by you on $request>createTime$ with id <strong>#$request_id$</strong> was scheduled for payment by $request>lastHop>previousHop>executedBy>name$ on $request>lastHop>previousHop>executionTime$</p>$if:request>lastHop>previousHop>comment$<br/><strong>Initiator's Comment<br>$request>lastHop>previousHop>comment$</strong><br/>$if$<p>Kind Regards,<br />GPAY Team</p>
+subject.payment.request.initiate.notification=Payment Initiated For Your Payment Request
+
+temp.upload.dump.dir=dumps
+
+flex.mfs.communicator.module.url=
+flex.mfs.communicator.module.timeout=30
+mobicashweb.sms.send.url=http://10.10.22.67:20000/mobicashweb/pages/resendprepaidtoken/resend_sms.jsp
+mobicashweb.sms.send.timeout=60
+
+http_proxy=10.10.20.107
+http_port=3828
+
+#optional
+com.zaxxer.hikari.housekeeping.periodMs=10s
+
+#optional
+app.context=/
+
+email.template.billdata.modification.notification=<p><strong>Dear Validator,</strong>,</p><p>Some changes for Bill Data, done by $modifier>name$ are waiting for validation. Changes will be effective after confirmation<br/><p>Kind Regards,<br/>GPAY Team</p>
+email.template.billdata.modification.subject=GPAY Bill Data Modification Notification
+email.template.billdata.approve.notification=<p><strong>Dear Bill Data Modifier</strong>,</p><p>Your Bill Data modification got $if:action:eq:approve$approved$if$$else$rejected$else$ <br/>$if:comment$<h4>Validator's Comment</h4><br/><i>$comment$</i>$if$<p><br/><p>Kind Regards,<br/>GPAY Team</p>
+email.template.billdata.approve.subject=Your Bill Data modification got $if:action:eq:approve$approved$if$$else$rejected$else$
+
+flex.mfs.communicator.module.url=
+flex.mfs.communicator.module.timeout=
+
+front.report.max.duration.months=6
+
+#Must end with / or \
+payment.request.attachment.dump.dir=
+
+#Partial PaymentRequest rejection
+email.template.payment.request.partial.reject.notification=<p><strong>Dear $initiator>name$</strong>,</p><p>The Payment Request requested by you on $request>createTime$ with id <strong>#$request_id$</strong> was partially rejected by $request>lastHop>previousHop>executedBy>name$ on $request>lastHop>previousHop>executionTime$</p><p>rejected bills : <p><p>$bills$</p>$if:request>lastHop>previousHop>comment$<br/><strong>Approver's Comment<br>$request>lastHop>previousHop>comment$</strong><br/>$if$<p>Kind Regards,<br />GPAY Team</p>
+subject.payment.request.partial.reject.notification=Payment Request Partial Approval Rejected
+
+email.template.payment.request.levelwize.approved.notification=
+subject.payment.request.levelwize.approved.notification=Payment Request Waiting For Approval

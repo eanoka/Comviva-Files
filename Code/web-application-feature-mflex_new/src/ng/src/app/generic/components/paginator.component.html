@@ -1,0 +1,32 @@
+<div class="per-page-selector">
+    <span class="inline-control-label">Per Page</span>
+    <div class="input-group-append" dropdown>
+        <button type="button" class="btn btn-primary dropdown-toggle" dropdownToggle>
+            {{currentPerPage}}
+            <span class="caret"></span>
+        </button>
+        <div class="dropdown-menu" *dropdownMenu>
+            <ng-template ngFor let-item [ngForOf]="perPageOptions">
+                <span class="dropdown-item" (click)="changePerPage(item)">{{item}}</span>
+            </ng-template>
+        </div>
+    </div>
+</div>
+<div class="pagination-wrapper">
+    <span class="inline-control-label">Pages</span>
+    <ul class="pagination">
+        <li class="page-item" [class.disabled]="currentPage < 2" (click)="currentPage > 1 && toPage(1)"><span class="page-link"><i class="fa fa-angle-double-left"></i></span></li>
+        <li class="page-item" [class.disabled]="currentPage < 2" (click)="currentPage > 1 && toPage(currentPage - 1)"><span class="page-link"><i class="fa fa-chevron-left"></i></span></li>
+        <ng-template [ngIf]="startPage != 1">
+            <li class="page-item"><span class="page-link" (click)="showBackwardPages()">...</span></li>
+        </ng-template>
+        <ng-template ngFor let-item [ngForOf]="[].constructor(totalNumberOfPage > numberOfVisiblePage ? numberOfVisiblePage : totalNumberOfPage)" let-i="index">
+            <li class="page-item" [class.disabled]="currentPage == i + startPage" (click)="currentPage != i + startPage && toPage(i + startPage)"><span class="page-link">{{i + startPage}}</span></li>
+        </ng-template>
+        <ng-template [ngIf]="endPage != totalNumberOfPage">
+            <li class="page-item"><span class="page-link" (click)="showForwardPages()">...</span></li>
+        </ng-template>
+        <li class="page-item" [class.disabled]="currentPage == totalNumberOfPage" (click)="currentPage != totalNumberOfPage && toPage(currentPage + 1)"><span class="page-link"><i class="fa fa-chevron-right" ></i></span></li>
+        <li class="page-item" [class.disabled]="currentPage == totalNumberOfPage" (click)="currentPage != totalNumberOfPage && toPage(totalNumberOfPage)"><span class="page-link"><i class="fa fa-angle-double-right"></i></span></li>
+    </ul>
+</div>

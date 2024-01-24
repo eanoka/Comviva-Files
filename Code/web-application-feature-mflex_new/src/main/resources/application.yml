@@ -1,0 +1,23 @@
+cbp:
+    datasource:
+        driverClassName: com.mysql.cj.jdbc.Driver
+spring:
+    jpa:
+        properties:
+            hibernate:
+                implicit_naming_strategy: com.grameenphone.wipro.extensions.spring.orm.NamingStrategy
+                dialect: org.hibernate.dialect.MySQL8Dialect
+    security:
+        filter:
+            order: 2
+report:
+    datasource:
+        driverClassName: com.mysql.cj.jdbc.Driver
+logging:
+    level:
+        org:
+            hibernate:
+                type: trace
+
+server:
+    port : 8088

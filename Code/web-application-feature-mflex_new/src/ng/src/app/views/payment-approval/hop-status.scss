@@ -1,0 +1,43 @@
+.top-count-line {
+  text-align: center;
+  font-weight: bolder;
+  font-size: x-large;
+}
+
+.navigation-blocks {
+  margin-top: 100px;
+  display: flex;
+}
+
+.navigation-blocks a {
+  flex-basis: 250px;
+  flex-grow: 0;
+  background-color: #D9D9D9;
+  border: 2px solid #B6B6B6;
+  height: 150px;
+  text-align: center;
+  margin: auto;
+  border-radius: 20px;
+  font-size: large;
+  font-weight: bold;
+  padding: 56px 0;
+  cursor: pointer;
+  color: #164162;
+  text-decoration: none;
+
+  &:hover {
+    color: #20a8d8;
+  }
+
+  &.two-line {
+    padding: 46px 20px;
+  }
+
+  &.left {
+    margin-left: 100px;
+  }
+
+  &.right {
+    margin-right: 100px;
+  }
+}

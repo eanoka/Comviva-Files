@@ -1,0 +1,64 @@
+<form class="role-creation-form" (ngSubmit)="onSubmit(thisForm)" #thisForm="ngForm" *ngIf="!records">
+    <div class="form-group row">
+        <label for="category" class="col-4 col-form-label">Payment Request:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" id="request" name="request" required="" [class.is-invalid]="!requestField.valid" (ngModelChange)="company = nullReference" [disabled]="!dataLoaded" [(ngModel)]="request" #requestField="ngModel">
+                <option [ngValue]="nullReference">{{'Select a Payment Request'}}</option>
+                <ng-template ngFor let-item [ngForOf]="requests" let-i="index">
+                    <option [ngValue]="item">{{_u.toPRId(item.id)}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="company" class="col-4 col-form-label">Biller Company:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" id="company" name="company" [disabled]="!dataLoaded" [(ngModel)]="company">
+                <option [ngValue]="nullReference">{{'Select Biller Company'}}</option>
+                <ng-template ngFor let-item [ngForOf]="request && request.companies" let-i="index">
+                    <option [ngValue]="item.code">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align: center">
+            <button type="submit" [disabled]="submitting || !dataLoaded || !thisForm.form.valid">Submit</button>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</form>
+<ng-template [ngIf]="records">
+    <nav class="table-top-line text-right">
+        <a class="download-icons" [href]="'api/report/downloadReportData?' + $.param(lastCacheSubmitData)" download="Transaction Report.xlsx"><i class="fa fa-file-excel-o"></i></a>
+        <paginator class="page-block" [totalRecords]="count" [offset]="offset" (pageChange)="onChangePagination($event)"></paginator>
+    </nav>
+    <table class="table table-bordered table-striped table-sm">
+        <thead>
+        <tr>
+            <th>Paid Amount</th>
+            <th>Biller Transaction Id</th>
+            <th>GPAY Transaction Id</th>
+            <th>Reversal Transaction Id</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of records">
+            <td>{{item.account}}</td>
+            <td>{{item.thirdPartyTxnid}}</td>
+            <td>{{item.mfsTxnid}}</td>
+            <td>{{item.reversalTxnid}}</td>
+            <td>{{item.status}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="bottom-button-line text-right">
+        <span>
+            <a class="btn btn-cancel" (click)="refineFilter()">
+                Refine Filter
+            </a>
+        </span>
+    </div>
+</ng-template>

@@ -1,0 +1,50 @@
+<nav class="table-top-line">
+    <span class="text-left">Bill Data Waiting for Validation</span>
+    <paginator class="text-right page-block" [totalRecords]="totalData" [offset]="offset" (pageChange)="dataService.loadTableData()"></paginator>
+</nav>
+<table class="table table-bordered table-striped table-sm">
+    <thead>
+    <tr>
+        <th>Subsidiary Account</th>
+        <th>Biller Type</th>
+        <th>Biller Name</th>
+        <th>Meter/Account</th>
+        <th>Modified By</th>
+        <th>Expected Operation</th>
+        <th><input type="checkbox" id="select-all" (change)="selectAll($event)"> (Un)Select All</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of records">
+        <td [attr.title]="item.status === 'ModificationPending' ? 'Was: ' + item.modifiedDataFor.clientDivision.name : null">{{item.clientDivision.name}}</td>
+        <td [attr.title]="item.status === 'ModificationPending' ? 'Was: ' + item.modifiedDataFor.company.category.name : null">{{item.company.category.name}}</td>
+        <td [attr.title]="item.status === 'ModificationPending' ? 'Was: ' + item.modifiedDataFor.company.name : null">{{item.company.name}}</td>
+        <td [attr.title]="item.status === 'ModificationPending' ? 'Was: ' + item.modifiedDataFor.accountNo : null">{{item.accountNo}}</td>
+        <td>{{item.updatedBy.name}}</td>
+        <ng-template [ngIf]="item.status === 'CreationPending'">
+            <td style="color:green;">Add</td>
+        </ng-template>
+        <ng-template [ngIf]="item.status === 'RemovalPending'">
+            <td style="color:red;">Remove</td>
+        </ng-template>
+        <ng-template [ngIf]="item.status === 'ModificationPending'">
+            <td style="color:blue;">Modify</td>
+        </ng-template>
+        <td>
+            <input type="checkbox" id="select-checkbox-{{item.id}}" attr.billdata-id="{{item.id}}" (change)="selectionChange($event)">
+        </td>
+    </tr>
+    </tbody>
+</table>
+<br>
+<div class="form-group row">
+    <label for="comment" class="col-4 col-form-label">Comments:</label>
+    <div class="col-8">
+        <textarea id="comment" name="comment" [(ngModel)]="comment" rows="6" cols="70"
+                  placeholder="Write your comments here"></textarea>
+    </div>
+</div>
+<div class="button-line text-right">
+    <button class="btn btn-submit no-button" (click)="reject()">Reject</button>&nbsp;
+    <button class="btn btn-submit yes-button" (click)="approve()">Approve</button>
+</div>

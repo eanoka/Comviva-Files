@@ -1,0 +1,134 @@
+<div class="top-line">
+    <span class="download-request-report" [class.disabled-link]="!currentRequestId" (click)="downPdf()">
+        <i class="fa fa-download"></i>
+        Download
+    </span>
+</div>
+<div class="body-part">
+    <div class="table-container" [class.no-bill]="!bills" [class.loading]="tableDataLoading">
+        <ng-template [ngIf]="currentRequest">
+    		<div *ngIf="bills && bills.request && bills.request.lastHop">
+				<request-history [hops]="bills.hops" [bills]="bills"></request-history>
+			</div>
+    	</ng-template>
+        <ng-template [ngIf]="loggedUser.permissions.includes(_actions.VIEW_BILL_STATUS)" [ngIfElse]="noParm">
+            <bill-table *ngIf="bills; else nobill" [totalAmount]="totalAmountForCurrentRequest" [onChangePagination]="onChangePagination.bind(this)" [bills]="bills" [selectedBillIdsForRejection]="selectedBillIdsForRejectionInPayment" [selectedRequests]="selectedRequests" (selelectBillIdsChange)=changeChildData($event)></bill-table>
+        </ng-template>
+        <ng-template #nobill>
+            <div class="no-bill">
+                Click on a payment request to view its details
+            </div>
+        </ng-template>
+        <ng-template #noParm>
+            <div class="no-bill">
+                You don't have permission to view request details
+            </div>
+        </ng-template>
+    </div>
+    <div class="command-display-panel">
+        <div class="summary-header">Payament Ready Requests</div>
+        <div class="summary-container">
+            <div class="summary-top-line">
+                <div class="date">{{_moment().format("DD-MM-YY")}}</div>
+                <div class="amount">BDT {{selectedTotalAmount.toBdFormat()}}</div>
+            </div>
+            <div class="request-summary">
+                <div *ngFor="let req of requests">
+                    <div class="each-summary">
+                        <div class="first-line">
+                            <input type="checkbox" id="checkid-{{req.id}}" (change)="onRequestSelectionChange($event, req, myModal1)">
+                            <span class="request-id" (click)="onClickShowDetail(req, myModal2)"> {{_u.toPRId(req.id)}}</span>
+                        </div>
+                        <div class="second-line">
+                            BDT {{req.payableAmount.toBdFormat()}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="button-line">
+            <button class="btn btn-submit yes-button" (click)="preFinalize(true, myModal)" [disabled]="isApproveDisabled()">Pay</button>
+            <button class="btn btn-submit no-button" (click)="preFinalize(false, myModal)" [disabled]="selectedTotalAmount == 0">Reject</button>
+        </div>
+    </div>
+</div>
+<div bsModal #myModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{finalizeAction}} Bill Payment</h4>
+                <button type="button" class="close" (click)="myModal.hide()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="comment">Comment</label>
+                            <textarea class="form-control" id="comment" placeholder="Enter your comment" [(ngModel)]="actionComment"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" *ngIf="finalizeAction == 'Pay'">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="pin">Pin</label>
+                            <input type="password" [class.is-invalid]="!pin" class="form-control" id="pin" [(ngModel)]="pin" required="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" (click)="myModal.hide()">Cancel</button>
+                <button type="button" class="btn btn-submit" [disabled]="finalizeAction == 'Pay' && !pin" (click)="finalize(finalizeAction, myModal)">{{finalizeAction}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div bsModal #myModal1="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+             <div class="modal-header">
+                <h4 class="modal-title">Are You Sure!!</h4>
+                <button type="button" class="close" (click)="preChangeCheckBox(false, myModal1)" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                	Partial rejection not allowed if multiple requests are selected, Do you want to clear selection and select multiple?
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" (click)="preChangeCheckBox(false, myModal1)">Cancel</button>
+                <button type="button" class="btn btn-submit" (click)="preChangeCheckBox(true, myModal1)">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div bsModal #myModal2="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+             <div class="modal-header">
+                <h4 class="modal-title">Are You Sure!!</h4>
+                <button type="button" class="close" (click)="preShowDetail(false, myModal2)" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                	You have some bills for rejection. Switching to other request will clear these selection. Do you want to proceed?
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" (click)="preShowDetail(false, myModal2)">Cancel</button>
+                <button type="button" class="btn btn-submit" (click)="preShowDetail(true, myModal2)">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<request-pdf-download *ngIf="pdfGenerating" (onDownload)="onDownload()" [requestId]="currentRequest.id"></request-pdf-download>

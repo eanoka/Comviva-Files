@@ -1,0 +1,133 @@
+<form class="create-bill-data-form" (ngSubmit)="onSubmit(thisForm)" #thisForm="ngForm" [class.loading-incomplete]="!dataLoaded">
+    <div class="form-group row">
+        <div class="col-4">User Type</div>
+        <div class="col-8">{{loggedUser.role.name}}</div>
+        <input type="hidden" name="id" [(ngModel)]="boundModel.id" value="{{model.user?.id}}">
+    </div>
+    <div class="form-group row" *ngIf="(!model.user || model.user.client?.id != loggedUser.client?.id) && !boundModel.divisions?.length && (loggedUser.permissions.includes(Actions.CREATE_OTHER_ACCOUNT_USER) || loggedUser.permissions.includes(Actions.EDIT_OTHER_ACCOUNT_USER))">
+        <label for="account" class="col-4 col-form-label">Account:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" id="account" name="account" [disabled]="model.user || !dataLoaded" [(ngModel)]="boundModel.account" #category="ngModel">
+                <ng-template [ngIf]="!boundModel.account" [ngIfElse]="elssss">
+                    <option [ngValue]="nullReference" selected>{{'Select one for other account user creation'}}</option>
+                </ng-template>
+                <ng-template #elssss>
+                    <option [ngValue]="nullReference">{{'Create user for own account'}}</option>
+                </ng-template>
+                <ng-template ngFor let-item [ngForOf]="model.user != null && model.user.client ? [model.user.client] : model.clients" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row" *ngIf="!loggedUser.isGP && (!boundModel.account || boundModel.account.id == loggedUser.client.id)">
+        <label for="sub-account" class="col-4 col-form-label">Sub Account:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <ng-select (ngModelChange)="onSubAccountChange()"
+                    id="sub-account"
+                    name="divisionIds"
+                    bindLabel="name"
+                    bindValue="id"
+                    [(ngModel)]="boundModel.divisions"
+                    [items]="divisionEntries"
+                    [disabled]="!dataLoaded"
+                    [multiple]="true" [closeOnSelect]="true"
+                    placeholder="Choose Sub Accounts Or Leave Empty For All">
+            </ng-select>
+            <div class="input-note">
+                Leaving empty will avail all sub accounts
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="name" class="col-4 col-form-label">User Name:</label>
+        <div class="col-8">
+            <input name="name" type="text" class="form-control" [disabled]="model.user" [ngClass]="{'is-invalid': nameField.errors?.required}" id="name" placeholder="The name to display" [(ngModel)]="boundModel.name" required="" #nameField="ngModel">
+            <div *ngIf="nameField.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="msisdn" class="col-4 col-form-label">MSISDN:</label>
+        <div class="col-8">
+            <input name="msisdn" type="text" class="form-control" [disabled]="model.user" [ngClass]="{'is-invalid': !mobileField.valid}" id="msisdn" pattern="((\+|00)?880|0)?1\d{9}" placeholder="Enter mobile number" [(ngModel)]="boundModel.mobile" required="" #mobileField="ngModel" [validate-async]="{unique: duplicateMsisdnChecker.bind(this)}">
+            <div *ngIf="mobileField.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+            <div *ngIf="mobileField.errors?.pattern" class="invalid-feedback">
+                Please provide a valid MSISDN.
+            </div>
+            <div *ngIf="mobileField.errors?.unique" class="invalid-feedback">
+                This MSISDN is already been associated with other user
+            </div>
+        </div>
+    </div>
+    <div class="form-group row" *ngIf="!loggedUser.isGP || boundModel.account">
+        <label for="email" class="col-4 col-form-label">Email:</label>
+        <div class="col-8">
+            <input name="email" type="text" class="form-control" [ngClass]="{'is-invalid': !emailField.valid}" id="email" email placeholder="Enter your email" [(ngModel)]="boundModel.email" required="" #emailField="ngModel" [disabled]="model.user" [validate-async]="{unique: duplicateEmailChecker.bind(this)}">
+            <div *ngIf="emailField.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+            <div *ngIf="emailField.errors?.email" class="invalid-feedback">
+                Please provide a valid Email.
+            </div>
+            <div *ngIf="emailField.errors?.unique" class="invalid-feedback">
+                This email is already used by another user
+            </div>
+        </div>
+    </div>
+    <div class="form-group row" *ngIf="loggedUser.isGP && !boundModel.account">
+        <label for="adid" class="col-4 col-form-label">GP AD ID:</label>
+        <div class="col-8">
+            <input name="adid" type="text" class="form-control" [ngClass]="{'is-invalid': !adidField.valid}" id="adid" placeholder="Enter your GP AD ID" [(ngModel)]="boundModel.adid" required="" #adidField="ngModel" [disabled]="model.user" [validate-async]="{unique: duplicateAdidChecker.bind(this)}">
+            <div *ngIf="adidField.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+            <div *ngIf="adidField.errors?.unique" class="invalid-feedback">
+                This AD ID Already added
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="address" class="col-4 col-form-label">Address:</label>
+        <div class="col-8">
+            <input name="address" type="text" class="form-control" id="address" [ngClass]="{'is-invalid': !addressField.valid}"  [(ngModel)]="boundModel.address" required="" #addressField="ngModel">
+            <div *ngIf="addressField.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+        </div>
+    </div>
+    <div class="form-group row" *ngIf="!boundModel.account || boundModel.account?.id == loggedUser.client?.id; else otherClient">
+        <label for="role" class="col-4 col-form-label">Role:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select [disabled]="!dataLoaded || (model.user && (model.user.id == loggedUser.id || !permissions.includes(Actions.CHANGE_ROLE)))" class="form-control" [class.is-invalid]="roleField.errors?.required" id="role" name="role" [(ngModel)]="boundModel.role" required="" #roleField="ngModel">
+                <ng-template [ngIf]="!boundModel.role">
+                    <option [ngValue]="nullReference">{{'Select A Role'}}</option>
+                </ng-template>
+                <ng-template ngFor let-item [ngForOf]="model.roles" let-i="index">
+                    <option [ngValue]="item.id">{{item.name}}</option>
+                </ng-template>
+            </select>
+            <div *ngIf="roleField.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+        </div>
+    </div>
+    <ng-template #otherClient>
+        <div class="form-group row">
+            <label class="col-4 col-form-label">Role:</label>
+            <div class="col-8">
+                <input type="text" class="form-control" value="Client Admin" disabled>
+            </div>
+        </div>
+    </ng-template>
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align: center">
+            <button type="submit" [disabled]="!dataLoaded || submitting || !thisForm.form.valid || thisForm.form.pending">{{model.user ? "Update" : "Create"}}</button>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</form>

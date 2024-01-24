@@ -1,0 +1,417 @@
+[12:38 PM] Anshika Aggarwal
+--------------------------------------------------------------------------------------------------------------
+
+curl --location 'https://mfsbaastest.grameenphone.com/jigsaw/v1/order/billpay' \
+
+--header 'Content-Type: application/json' \
+
+--header 'Cookie: TS01e8828b=01f85cdc3c45009be88b8dc2907cb422c9dbc891322e3041a5eaaddab62191ca993f8f9770073e7f762285741e428429f81081c459' \
+
+--data '{
+
+    "bearerCode": "MOBILE",
+
+    "currency": 101,
+
+    "deviceInfo": {
+
+        "appVersion": 10.2,
+
+        "deviceId": 990000862471854,
+
+        "lattitude": 12.971599,
+
+        "logitude": 77.594566,
+
+        "mac": "00:1B:44:11:3A:B7",
+
+        "model": "Oneplus10",
+
+        "networkOperator": "Orange",
+
+        "networkType": "4G",
+
+        "os": "Android10",
+
+        "providerIpAddress": "172.56.76.89"
+
+    },
+
+    "initiator": "sender",
+
+    "language": "en",
+
+    "partnerData": {"billAccountNumber":"12345","billNumber":"12345","surcharge":"surcharge1","vat":"vat1","other1":"other1","other2":"other2","billerName":"TTAS","billerCode":"TTAS"},
+
+    "receiver": {
+
+        "idType": "mobileNumber",
+
+        "idValue": "01788886666",
+
+        "productId": 12
+
+    },
+
+    "remarks": "remarks",
+
+    "sender": {
+
+        "idType": "mobileNumber",
+
+        "idValue": "01755555555",
+
+        "mpin": 13579,
+
+        "paymentInstruments": [
+
+            {
+
+                "instrumentType": "WALLET",
+
+                "amount": 1,
+
+                "productId": 12
+
+            }
+
+        ],
+
+        "userRole": "Channel"
+
+    },
+
+    "serviceFlowId": "BILLPAYOAP"
+
+}'
+
+
+------------- working request----------------------
+
+
+{
+    "bearerCode": "MOBILE",
+    "currency": 101,
+    "deviceInfo": {
+        "appVersion": 10.2,
+        "deviceId": 990000862471854,
+        "lattitude": 12.971599,
+        "logitude": 77.594566,
+        "mac": "00:1B:44:11:3A:B7",
+        "model": "Oneplus10",
+        "networkOperator": "Orange",
+        "networkType": "4G",
+        "os": "Android10",
+        "providerIpAddress": "172.56.76.89"
+    },
+    "initiator": "sender",
+    "language": "en",
+    "partnerData": {"billAccountNumber":"12345","billNumber":"12345","surcharge":"surcharge1","vat":"vat1","other1":"other1","other2":"other2","billerName":"TTAS","billerCode":"TTAS"},
+    "receiver": {
+        "idType": "mobileNumber",
+        "idValue": "01788886666",
+        "productId": 12
+    },
+    "remarks": "remarks",
+    "sender": {
+        "idType": "mobileNumber",
+        "idValue": "01755555555",
+        "mpin": 13579,
+        "paymentInstruments": [
+            {
+                "instrumentType": "WALLET",
+                "amount": 1,
+                "productId": 12
+            }
+        ],
+        "userRole": "Channel"
+    },
+    "serviceFlowId": "BILLPAYOAP"
+}
+
+
+---------------------------------------------------
+
+{
+    "bearerCode": "MOBILE",
+    "currency": 101,
+    "deviceInfo": {
+        "appVersion": 10.2,
+        "deviceId": 990000862471854,
+        "lattitude": 12.971599,
+        "logitude": 77.594566,
+        "mac": "00:1B:44:11:3A:B7",
+        "model": "Oneplus10",
+        "networkOperator": "Orange",
+        "networkType": "4G",
+        "os": "Android10",
+        "providerIpAddress": "172.56.76.89"
+    },
+    "initiator": "sender",
+    "language": "en",
+    "partnerData": {"billAccountNumber":"601130400","consumer_id":"601130400","billNumber":"3298579103361375","surcharge":"surcharge1","vat":"vat1","other1":"other1","other2":"other2","billerName":"DSCO","billerCode":"JGDCL"},
+    "receiver": {
+        "idType": "mobileNumber",
+        "idValue": "01788886666",
+        "productId": 12
+    },
+    "remarks": "remarks",
+    "sender": {
+        "idType": "mobileNumber",
+        "idValue": "01755555555",
+        "mpin": 13579,
+        "paymentInstruments": [
+            {
+                "instrumentType": "WALLET",
+                "amount": 1,
+                "productId": 12
+            }
+        ],
+        "userRole": "Channel"
+    },
+    "serviceFlowId": "BILLPAYOAP"
+}
+
+------------
+
+{
+    "bearerCode": "MOBILE",
+    "currency": 101,
+    "deviceInfo": {
+        "appVersion": 10.2,
+        "deviceId": 990000862471854,
+        "lattitude": 12.971599,
+        "logitude": 77.594566,
+        "mac": "00:1B:44:11:3A:B7",
+        "model": "Oneplus10",
+        "networkOperator": "Orange",
+        "networkType": "4G",
+        "os": "Android10",
+        "providerIpAddress": "172.56.76.89"
+    },
+    "initiator": "sender",
+    "language": "en",
+    "partnerData": {"billAccountNumber":"504117700","consumer_id":"504117700","billNumber":"20345678993","surcharge":"surcharge1","vat":"vat1","other1":"other1","other2":"other2","billerName":"DWASA","billerCode":"DWASA"},
+    "receiver": {
+        "idType": "mobileNumber",
+        "idValue": "01788886666",
+        "productId": 12
+    },
+    "remarks": "remarks",
+    "sender": {
+        "idType": "mobileNumber",
+        "idValue": "01755555555",
+        "mpin": 13579,
+        "paymentInstruments": [
+            {
+                "instrumentType": "WALLET",
+                "amount": 110,
+                "productId": 12
+            }
+        ],
+        "userRole": "Channel"
+    },
+    "serviceFlowId": "BILLPAYOAP"
+}
+
+pin : 13579
+
+
+
+
+------------------------------------
+verify pin:----------------
+------------------------------------
+
+
+{
+ "workspace": "BUSINESS",
+ "identifierType": "MSISDN",
+ "language": "en",
+ "authenticationValue": "13579",
+ "identifierValue": "01755555555",
+ "isTokenRequired": "Y"
+}
+
+---------------------------------------------------------------
+params:
+-------
+
+STD_ID
+ACCT_NO
+USR_ID
+ACC_NO
+AMNT
+ADD_MSISDN
+MOB_NO
+METERTYPE
+BILLNO
+-----------------------------------------------------------------
+
+
+Hi Team, 
+This is sample Request - Response of Fetch due bills : 
+-------------------------------------------------------
+
+curl --location --request POST 'https://mfsbaastest.grameenphone.com/extensibility/fetchPendingBillsFormAggregator' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: TS01e8828b=01f85cdc3ce66a4bae353f15967c09ec3329c0cd44876914fea822ba9b43fda793e13c7ddf157209d4be00f7f0ed36b078959d2875' \
+--data-raw '{    
+"utility": "DSCO",  
+"consumer_id": "17021270" , 
+"thirdParty" : "aggregator",
+"params":{
+    "MOB_NO":"9810036587"
+    }
+}'
+ 
+ 
+Response:
+{
+    "message": "OK",
+    "code": 200,
+    "timestamp": 1698243904283,
+    "utility": "DSCO",
+    "account_no": "17021270",
+    "bill_list": [
+        {
+            "bill_number": "021737204683",
+            "due_date": "2024-02-14",
+            "amount": 200.0,
+            "service_charge": 0.0,
+            "detail": {
+                "accountNo": "17021270",
+                "billNo": "021737204683",
+                "billMonth": "1",
+                "billYear": "2021",
+                "totalKwh": "333",
+                "amount": "200.0",
+                "lpc": "50.0",
+                "vat": "3.0",
+                "issueDate": "14-01-2021",
+                "dueDate": "14-02-2024",
+                "paymentStatus": "UNPAID"
+            }
+        }
+    ]
+}
+ 
+
+
+
+----------------------------------
+
+{
+    "bearerCode": "MOBILE",//WEB or USSD
+    "currency": 101,
+    "deviceInfo": {
+        "appVersion": 10.2,
+        "deviceId": 990000862471854,
+        "lattitude": 12.971599,
+        "logitude": 77.594566,
+        "mac": "00:1B:44:11:3A:B7",
+        "model": "Oneplus10",
+        "networkOperator": "Orange",
+        "networkType": "4G",
+        "os": "Android10",
+        "providerIpAddress": "172.56.76.89"
+    },
+    "initiator": "sender",
+    "language": "en",
+    "partnerData": {"billAccountNumber":"504117700","consumer_id":"504117700","billNumber":"20345678993","surcharge":"surcharge1","vat":"vat1","other1":"other1","other2":"other2","billerName":"DWASA","billerCode":"DWASA"},
+    "receiver": {
+        "idType": "mobileNumber",
+        "idValue": "01788886666",
+        "productId": 12
+    },
+    "remarks": "bulk bill payment",
+    "sender": {
+        "idType": "mobileNumber",
+        "idValue": "01755555555",
+        "mpin": 13579,
+        "paymentInstruments": [
+            {
+                "instrumentType": "WALLET",
+                "amount": 110,
+                "productId": 12
+            }
+        ],
+        "userRole": "Channel"
+    },
+    "serviceFlowId": "BILLPAYOAP",
+	"externalReferenceId":"";
+}
+
+----------------------------------
+
+create new user:
+do client id creation : 01755555555
+Remove IDP check at time of user creation : create a user with login ID : OTP01 : Umang must have shared in SOW document
+Validate mPIN:
+curl --location 'http://localhost:7094/user-authentication-service/v1/user/auth/validate_credentials/' --header 'Content-Type: application/json' --data '{     "workspace": "BUSINESS",     "identifierType": "MSISDN",     "language": "en",     "authenticationValue":"1357",     "identifierValue": "01755555555",     "isTokenRequired":"Y" }'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------
+
+paybill sammple responses from mobiquity:
+
+response 1:
+----------
+
+{
+    "status": "FAILED",
+    "language": "en",
+    "mfsTenantId": "mfsPrimaryTenant",
+    "errors": [
+        {
+            "code": "99990",
+            "message": "User Does not have sufficient Balance to perform this transaction",
+            "componentName": "TXN"
+        }
+    ],
+    "transactionTimeStamp": "2023-11-02T12:19:16",
+    "errorCode": "Generic06",
+    "traceId": "489682e7-133e-4916-9aea-6e9aa0271173",
+    "step": "validate.account.thresholds:E.lta.rollback",
+    "errorUserMsg": "Invalid input.",
+    "orderId": "169890-595568-668246",
+    "orderStatus": "FAILED",
+    "orderState": "VALIDATION_FAILED",
+    "httpErrorCode": "400"
+}
+
+
+
+
+
+
+response 2:
+-----------
+
+{
+    "code": "process.fulfilment",
+    "message": "Order is placed successfully",
+    "orderId": "169890-611798-002285",
+    "orderStatus": "PENDING",
+    "serviceRequestId": "d52137ef-d6b4-495c-b1ff-92e094ef4c55",
+    "transactionTimeStamp": "2023-11-02T12:22:32"
+}
+
+
+
+response 2:
+-----------

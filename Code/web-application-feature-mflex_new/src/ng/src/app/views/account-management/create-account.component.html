@@ -1,0 +1,53 @@
+<form class="create-bill-data-form" (ngSubmit)="onSubmit(thisForm)" #thisForm="ngForm">
+    <div class="form-group row">
+        <label for="name" class="col-4 col-form-label">Name:</label>
+        <div class="col-8">
+            <input name="name" type="text" class="form-control" [ngClass]="{'is-invalid': nameField.errors?.required || nameField.errors?.unique}" id="name" [(ngModel)]="name" required="" #nameField="ngModel" [validate-async]="{unique: duplicateNameChecker.bind(this)}">
+            <div *ngIf="nameField.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+            <div *ngIf="nameField.errors?.unique" class="invalid-feedback">
+                Name must be unique
+            </div>
+        </div>
+    </div>
+    <ng-template [ngIf]="App.user.isGP">
+        <div class="form-group row">
+            <label for="associatedMobileNo" class="col-4 col-form-label">MSISDN:</label>
+            <div class="col-8">
+                <input name="mobileNo" type="text" class="form-control" [ngClass]="{'is-invalid': !msisdnField.valid}" id="associatedMobileNo" [(ngModel)]="mobileNo" required="" pattern="(\+?880|0)?1\d{9}" #msisdnField="ngModel" [validate-async]="{unique: duplicateMsisdnChecker.bind(this)}">
+                <div *ngIf="msisdnField.errors?.pattern" class="invalid-feedback">
+                    Please provide a valid MSISDN.
+                </div>
+                <div *ngIf="msisdnField.errors?.unique" class="invalid-feedback">
+                    This msisdn already associated with other account
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="addressLine1" class="col-4 col-form-label">Address Line 1:</label>
+            <div class="col-8">
+                <input name="address1" type="text" class="form-control" id="addressLine1" [(ngModel)]="address1">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="addressLine2" class="col-4 col-form-label">Address Line 2:</label>
+            <div class="col-8">
+                <input name="address2" type="text" class="form-control" id="addressLine2" [(ngModel)]="address2">
+            </div>
+        </div>
+    </ng-template>
+    <div class="form-group row">
+        <label for="description" class="col-4 col-form-label">Description:</label>
+        <div class="col-8">
+            <textarea name="description" class="form-control" id="description" [(ngModel)]="description"></textarea>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align: center">
+            <button type="submit" [disabled]="submitting || !thisForm.form.valid">Submit</button>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</form>

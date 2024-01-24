@@ -1,0 +1,36 @@
+<nav class="table-top-line text-right">
+    <paginator class="page-block" [totalRecords]="totalData" [offset]="offset" (pageChange)="dataService.loadTableData()"></paginator>
+</nav>
+<table class="table table-bordered table-striped table-sm">
+    <thead>
+    <tr>
+    	<th>ID</th>
+    	<th>Biller Category</th>
+        <th>Biller Company</th>
+        <th>Account/Meter No</th>
+        <th>Total Processed</th>
+        <th>Success Count</th>
+        <th>Fail Count</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Added By</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody #tbody>
+        <tr *ngFor="let item of records">
+        <!-- "BCR" + String.format("%08x", billDetailTask.getId()).toUpperCase()) -->
+            <td>{{_u.toBCRId(item.id)}}</td>
+			<td>{{item.category ? item.category.name : ''}}</td>
+			<td>{{item.company ? item.company.name : ''}}</td>
+			<td>{{item.accountNo}}</td>
+			<td>{{item.totalProcessed}}</td>
+			<td>{{item.successCount}}</td>
+			<td>{{item.failedCount}}</td>
+			<td>{{item.startTime}}</td>
+			<td>{{item.endTime}}</td>
+			<td>{{item.addedBy ? item.addedBy.name : 'System'}}</td>
+			<td>{{item.status}}</td>
+		</tr>
+    </tbody>
+</table>

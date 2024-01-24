@@ -1,0 +1,18 @@
+Open Pam.comviva.com / 
+PSM For SSH MFA Caching
+
+From <https://pam.comviva.com/PasswordVault/v10/Accounts> 
+
+	Enter minimum 6 digit and generate file.
+Open Putty : 
+	- ankit.roy@comviva.com%admin%172.16.1.35@PSMP
+	- Add .ppk file which is downloaded 
+	- ssh -gL 1511:10.177.25.23:1521 -gL 5511:10.177.25.14:5555 -gL 2200:10.177.25.14:22 -gL 7890:10.177.25.14:7890 txn@10.177.25.14
+	- txn@10.177.25.14's password:
+	- Nov@3085
+	
+	
+	
+	- ssh -gL 1511:10.177.25.23:1521 -gL 5511:10.177.25.14:5555 -gL 2200:10.177.25.14:22 -gL 7890:10.177.25.14:7890 web@10.177.25.14
+	- web@10.177.25.14's password:
+	- NewWeb@001

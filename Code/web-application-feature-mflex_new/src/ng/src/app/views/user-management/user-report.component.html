@@ -1,0 +1,55 @@
+<nav class="table-top-line text-right">
+    <span class="download-icons download-request-report" (click)="downPdf()"><i class="fa fa-file-pdf-o"></i></span>
+    <a class="download-icons" [href]="'api/user/downloadAsXlsx'" download="User List.xlsx"><i class="fa fa-file-excel-o"></i></a>
+    <paginator class="page-block" [totalRecords]="totalData" [offset]="offset" (pageChange)="loadData($event)"></paginator>
+</nav>
+<table class="table table-bordered table-striped table-sm">
+    <thead>
+    <tr>
+        <th>Login ID</th>
+        <th>Role</th>
+        <th>Account</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of records">
+            <td>{{item.loginId}}</td>
+            <td>{{item.role.name}}</td>
+            <td>{{item.client?.name || "--"}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.email}}</td>
+            <td>{{item.address}}</td>
+            <td>{{item.active ? "Active" : "Barred"}}</td>
+        </tr>
+    </tbody>
+</table>
+<div *ngIf="pdfGenerating" class="pdf-downloading-loader" [attr.content]="generatingText">
+    <div style="width: 210mm; height: 297mm; background-color: #FFF; padding: 5mm; color: #000; font-size: 12px; text-align: left;" id="pdf-template">
+        <table style="width: 100%">
+            <thead>
+                <tr>
+                    <th style="background-color: #FFF">Role</th>
+                    <th style="background-color: #FFF">Account</th>
+                    <th style="background-color: #FFF">Name</th>
+                    <th style="background-color: #FFF">Email</th>
+                    <th style="background-color: #FFF">Address</th>
+                    <th style="background-color: #FFF">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of records">
+                    <td>{{item.role.name}}</td>
+                    <td>{{item.client?.name || "--"}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.email}}</td>
+                    <td>{{item.address}}</td>
+                    <td>{{item.active ? "Active" : "Barred"}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,11 @@
+package com.grameenphone.wipro.constants;
+
+public interface Events {
+    String LOGOUT = "LOGOUT";
+    String ROLE_PERMISSIONS_CHANGE = "ROLE-PERMISSIONS-CHANGE";
+    String USER_PERMISSIONS_CHANGE = "USER-PERMISSIONS-CHANGE";
+    String USER_CREATE = "USER-CREATE";
+    String USER_UPDATE = "USER-UPDATE";
+    String ENTITY_MANAGER_CLOSE = "ENTITY-MANAGER-CLOSE";
+    String HOP_CONFIG_CHANGE = "HOP-CONFIG-CHANGE";
+}

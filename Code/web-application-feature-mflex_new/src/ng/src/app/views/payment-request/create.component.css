@@ -1,0 +1,15 @@
+.refresh-bill-note {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    font-weight: bold;
+    margin-top: 10px; 
+    text-align: right; 
+}
+
+.table-top-line .count-block {
+    flex-grow: 1;
+    flex-basis: 0;
+    align-self: center;
+    text-align: left;
+}

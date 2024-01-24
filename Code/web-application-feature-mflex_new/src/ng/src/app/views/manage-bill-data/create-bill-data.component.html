@@ -1,0 +1,149 @@
+<form class="create-bill-data-form" [class.uploading]="uploading" (ngSubmit)="onSubmit(thisForm)" #thisForm="ngForm" [class.loading-incomplete]="!dataLoaded" appFileUpload (fileDropped)="fileDropped($event)">
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-8"><h3>Bill Data Enrollment</h3></div>
+        <input type="hidden" name="id" [(ngModel)]="boundModel.id">
+    </div>
+    <div class="form-group row">
+        <label for="alias" class="col-4 col-form-label">Name:</label>
+        <div class="col-8">
+            <input name="alias" type="text" class="form-control" id="alias" placeholder="Enter Alias Name" [(ngModel)]="boundModel.alias">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="sub-account" class="col-4 col-form-label">Sub Account:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" [ngClass]="{'is-invalid': subAccount.errors?.required}" id="sub-account" name="subAccount" [disabled]="!dataLoaded" [(ngModel)]="boundModel.subAccount" required="" #subAccount="ngModel">
+                <ng-template [ngIf]="!boundModel.subAccount">
+                    <option [ngValue]="nullReference">{{'Choose Subsidiary Account'}}</option>
+                </ng-template>
+                <ng-template ngFor let-item [ngForOf]="data.divisions" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+            <div *ngIf="subAccount.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="category" class="col-4 col-form-label">Biller Category:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select class="form-control" [ngClass]="{'is-invalid': category.errors?.required}" id="category" name="category" (ngModelChange)="boundModel.company = nullReference" [disabled]="!dataLoaded" [(ngModel)]="boundModel.category" required="" #category="ngModel">
+                <ng-template [ngIf]="!boundModel.category">
+                    <option [ngValue]="nullReference">{{'Select Biller Category'}}</option>
+                </ng-template>
+                <ng-template ngFor let-item [ngForOf]="data.categories" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+            <div *ngIf="category.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="company" class="col-4 col-form-label">Biller Company:</label>
+        <div class="col-8" [class.loading-incomplete]="!dataLoaded">
+            <select name="company" class="form-control" [ngClass]="{'is-invalid': company.errors?.required}" id="company" [disabled]="!dataLoaded" [(ngModel)]="boundModel.company" required="" #company="ngModel">
+                <ng-template [ngIf]="!boundModel.company">
+                    <option [ngValue]="nullReference">{{'Select Biller Company'}}</option>
+                </ng-template>
+                <ng-template ngFor let-item [ngForOf]="boundModel.category && boundModel.category.companies" let-i="index">
+                    <option [ngValue]="item">{{item.name}}</option>
+                </ng-template>
+            </select>
+            <div *ngIf="company.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="consumer-id" class="col-4 col-form-label">Account/Meter No:</label>
+        <div class="col-8">
+            <input name="consumerId" type="text" class="form-control" [ngClass]="{'is-invalid': consumer.errors?.required}" id="consumer-id" placeholder="Enter A/C or Meter Number" [(ngModel)]="boundModel.consumerId" required="" #consumer="ngModel">
+            <div *ngIf="consumer.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="associatedMobileNo" class="col-4 col-form-label">Associated Mobile No:</label>
+        <div class="col-8">
+            <input name="mobileNo" type="text" class="form-control" [ngClass]="{'is-invalid': msisdn.errors?.required || msisdn.errors?.pattern}" id="associatedMobileNo" placeholder="Enter Associated Mobile Number" [(ngModel)]="boundModel.mobileNo" required="" pattern="(\+?880|0)?1\d{9}" #msisdn="ngModel">
+            <div *ngIf="msisdn.errors?.required" class="required-feedback invalid-feedback">
+                This field is required
+            </div>
+            <div *ngIf="msisdn.errors?.pattern" class="invalid-feedback">
+                Please provide a valid MSISDN.
+            </div>
+        </div>
+    </div>
+
+    <ng-template [ngIf]="boundModel.company" ngFor let-item [ngForOf]="boundModel.company && boundModel.company.fields" let-i="index">
+        <div *ngIf=item.billdataInput>
+            <div class="form-group row">
+                <label for="{{item.paramCode}}" class="col-4 col-form-label">{{item.paramName}}</label>
+                <div class="col-8">
+                    <ng-template *ngIf="item.paramType == 'dropdown'; then dropdown; else text"></ng-template>
+                    <ng-template #text>
+                        <input name="ADDITIONAL.{{item.paramCode}}" type="text" class="form-control"
+                               [ngClass]="{'is-invalid': fields.errors?.required || fields.errors?.pattern}"
+                               placeholder="{{item.paramName}}"
+                               [(ngModel)]="boundModel.additionalParams['ADDITIONAL.'+item.paramCode]"
+                               required="{{item.required}}"
+                               pattern="{{item.validationRegex}}" #fields="ngModel">
+
+                        <div *ngIf="fields.errors?.required" class="required-feedback invalid-feedback">
+                            This field is required
+                        </div>
+                        <div *ngIf="fields.errors?.pattern" class="invalid-feedback">
+                            {{item.errorMessage}}
+                        </div>
+                    </ng-template>
+
+                    <ng-template #dropdown>
+                        <select name="ADDITIONAL.{{item.paramCode}}" class="form-control" [(ngModel)]="boundModel.additionalParams['ADDITIONAL.' + item.paramCode]" #ddrop="ngModel">
+                            <ng-template ngFor let-option [ngForOf]="JSON.parse(item.paramValues)">
+                                <option [ngValue]="option.value">{{option.description}}</option>
+                            </ng-template>
+                        </select>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <div class="form-group row">
+        <div class="col-4"></div>
+        <div class="col-4" style="text-align: center">
+            <button type="submit" [disabled]="!dataLoaded || submitting || !thisForm.form.valid">Submit</button> &nbsp; &nbsp; <strong>Or</strong>
+        </div>
+        <div class="col-4"></div>
+    </div>
+    <div class="form-group row">
+        <div class="col-12"></div>
+    </div>
+    <div class="form-group row">
+        <div class="col-12 text-center">To create account with large list, download the template, save & upload the file again</div>
+    </div>
+    <div class="form-group row">
+        <div class="col-12"></div>
+    </div>
+    <div class="form-group row">
+        <div class="col-3"></div>
+        <div class="col-6 text-center">
+            <a download="create bill data.xlsx" href="static/template/create bill data template.xlsx" class="btn">
+                Download Template &nbsp;
+                <i class="fa fa-download"></i>
+            </a>
+            &nbsp; &nbsp; &nbsp;
+            <button type="button" class="btn btn-submit btn-masked-file-input">
+                <input type="file" accept=".xls,.xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" (change)="fileDropped($event.target.files)">
+                Upload File &nbsp;
+                <i class="fa fa-upload"></i>
+            </button>
+        </div>
+        <div class="col-3"></div>
+    </div>
+</form>
