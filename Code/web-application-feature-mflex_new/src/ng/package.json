@@ -2,7 +2,9 @@
   "name": "@gpbd-mfs/cbbp-ui",
   "version": "2.0.0",
   "description": "Corporate Bulk Bill Pay UI",
-  "author": "Sadikullah Zobair",
+  "author": {
+    "name": "Sadikullah Zobair"
+  },
   "homepage": "https://gpaybulkbill.grameenphone.com/",
   "copyright": "Copyright 2023 Grameenphone Ltd",
   "license": "MIT",
@@ -79,7 +81,5 @@
   "engines": {
     "node": ">= 10.13",
     "npm": ">= 6"
-  },
-  "main": "karma.conf.js",
-  "keywords": []
+  }
 }

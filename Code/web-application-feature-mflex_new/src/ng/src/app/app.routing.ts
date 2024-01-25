@@ -6,11 +6,31 @@ import { DefaultLayoutComponent } from './containers';
 
 import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
-
+import { NewPasswordComponent } from './views/new-password/new-password.component';
+import { OtpPwdComponent } from './views/otp-pwd/otp-pwd.component';
+import { ChangePasswordComponent } from './views/change-password/change-password.component';
+import { ForgotpasswordComponent } from './views/forgotpassword/forgotpassword.component';
+import { OtpAuthComponent } from './views/otp-auth/otp-auth.component';
+import { LoginComponent } from './views/login/login.component';
 export const routes: Routes = [
+  { path: 'new-password', component: NewPasswordComponent },
+  { path: 'otp-pwd', component: OtpPwdComponent },
+  { path: 'change-password', component: ChangePasswordComponent },
+  {
+    path: 'forgotpassword',
+    component: ForgotpasswordComponent
+  },
+  {
+    path: 'otp-auth',
+    component: OtpAuthComponent
+  },
+  {
+    path: 'login',
+    component: LoginComponent
+  },
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
@@ -58,7 +78,7 @@ export const routes: Routes = [
         path: 'account-management',
         loadChildren: () => import('./views/account-management/component-group.module').then(m => m.AccountManagementModule)
       },
-       {
+      {
         path: 'role-management',
         loadChildren: () => import('./views/role-management/role-management.module').then(m => m.RoleManagementModule)
       },

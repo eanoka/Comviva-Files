@@ -29,6 +29,34 @@ import {ExtendGlobals} from "./generic/prototype.extensions";
 import {ConfirmDialogComponent} from "./views/blocks/modal-confirm.component";
 import {ModalModule} from "ngx-bootstrap/modal";
 
+
+// Import login component
+import { LoginComponent } from './views/login/login.component';
+
+// Import forgot password component
+import { ForgotpasswordComponent } from './views/forgotpassword/forgotpassword.component';
+import { NewPasswordComponent } from './views/new-password/new-password.component';
+
+// Import OTP Authentication component
+import { OtpAuthComponent } from './views/otp-auth/otp-auth.component';
+import { OtpPwdComponent } from './views/otp-pwd/otp-pwd.component';
+
+// Import change password component
+import { ChangePasswordComponent } from './views/change-password/change-password.component';
+
+// Login API service file
+import { LoginService } from './views/service/login.service';
+import { LoginSharedService } from './views/service/login-shared.service';
+
+// Change password API service file
+import { ChangepaswwordService } from './views/service/changepassword.service';
+
+// Forgot password API service file
+import { ForgotpasswordService } from './views/service/forgotpassword.service';
+import { AuthGuard } from './auth/auth.guard';
+import { AuthService } from './views/service/auth.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 const APP_CONTAINERS = [
     DefaultLayoutComponent
 ];
@@ -36,7 +64,6 @@ const APP_CONTAINERS = [
 ExtendGlobals()
 
 export let AppInjector: Injector;
-
 @NgModule({
     imports: [
         BrowserModule,
@@ -53,7 +80,9 @@ export let AppInjector: Injector;
         ChartsModule,
         HttpClientModule,
         AlertModule,
-        ModalModule
+        ModalModule,
+        FormsModule,
+        ReactiveFormsModule
     ],
     declarations: [
         AppComponent,
@@ -61,16 +90,22 @@ export let AppInjector: Injector;
         P404Component,
         P500Component,
         SnackbarComponent,
-        ConfirmDialogComponent
+        ConfirmDialogComponent,
+        LoginComponent,
+        ForgotpasswordComponent,
+        OtpAuthComponent,
+        OtpPwdComponent,
+        ChangePasswordComponent,
+        NewPasswordComponent
     ],
     providers: [{
         provide: LocationStrategy,
         useClass: HashLocationStrategy
-    }, HttpClientModule, {
+    }, HttpClientModule, AuthGuard, {
         provide: HTTP_INTERCEPTORS,
         useClass: HttpErrorInterceptor,
         multi: true
-    }],
+    }, LoginService, ChangepaswwordService, ForgotpasswordService, LoginSharedService, AuthService],
     bootstrap: [AppComponent]
 })
 export class AppModule {

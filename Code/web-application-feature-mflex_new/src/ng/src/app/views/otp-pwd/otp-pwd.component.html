@@ -1,0 +1,12 @@
+<div class="main">
+    <div class="otp-section">
+        <img class="logo" src="static/img/login/logo.png" alt="">
+        <form class="form" [formGroup]="OTPAuth">
+            <div class="title mt-3">OTP</div>
+            <div class="title mb-3">Verification Code</div>
+            <p class="message mt-3 mb-3">We have sent a verification code to your registered email address</p>
+            <input type="text" class="form-control" id="otpAuth" formControlName="otpAuth" required placeholder="Enter OTP" maxlength="6">
+            <button class="action" (click)="verifyOTP()" type="submit">Verify me</button>
+        </form>
+    </div>
+</div>

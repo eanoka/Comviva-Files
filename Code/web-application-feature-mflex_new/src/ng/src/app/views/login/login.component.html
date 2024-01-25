@@ -1,0 +1,70 @@
+<!--  -->
+
+<div class="main">
+    <div class="login-main">
+        <div class="child1">
+            <div class="gchild1">
+                <button type="button" class="btn" style="background-color: #00bfff; color: white; width: 324px;">
+                    <span class="login login-container">
+                        <img width="20" height="20" src="static/img/login/padlock.png" alt=""> 
+                    </span> Login with password</button>
+            </div>
+        </div>
+        <div class="child2">
+            <img class="logo" src="static/img/login/logo.png" alt="">
+        </div>
+        <div class="child3">
+            <form class="form" [formGroup]="login" (ngSubmit)="submitLogin()">
+            <div class="bchild1">
+                <h3 style="font-weight: bolder;">
+                    Login with password
+                </h3>
+            </div>
+            <div class="bchild2">
+                <div class="login-section mb-3 w-100">
+                    <div class="login-wrapper">
+                        <div class="login-left">
+                            <div class="login-icon-wrapper">
+                                <span class="login login-container">
+                                    <img width="20" height="20" src="static/img/login/email.png" alt="">
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="login-center">
+                            <div class="login-input-spacer"></div>
+
+                            <input type="text" class="login-input" maxlength="2048" autocapitalize="off"
+                                autocomplete="off" placeholder="Enter your user ID" id="userID"
+                                formControlName="userID" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="login-section mt-3 mb-3">
+                    <div class="login-wrapper">
+                        <div class="login-left">
+                            <div class="login-icon-wrapper">
+                                <span class="login login-container">
+                                    <img width="20" height="20" src="static/img/login/padlock.png" alt="">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="login-center">
+                            <div class="login-input-spacer"></div>
+
+                            <input type="password" class="login-input" maxlength="2048" autocapitalize="off"
+                                autocomplete="off" placeholder="Password" id="password"
+                                formControlName="password" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bchild3 mt-3">
+                <button type="button" class="btn btn-success" (click)="submitLogin()" style="width: 324px;">Login</button>
+                <br>
+                <a [routerLink]="['/forgotpassword']">Forgot Password ?</a>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>

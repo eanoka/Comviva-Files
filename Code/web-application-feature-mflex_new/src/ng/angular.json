@@ -33,7 +33,7 @@
               ]
             },
             "scripts": [],
-            "allowedCommonJsDependencies": []
+                   "allowedCommonJsDependencies": []
           },
           "configurations": {
             "production": {
